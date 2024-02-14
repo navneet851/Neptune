@@ -1,4 +1,4 @@
-package com.music.stream.neptune
+package com.music.stream.neptune.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,14 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.music.stream.neptune.R
 
 @Preview
 @Composable
@@ -58,7 +58,7 @@ fun HomeScreen() {
             HomePlaylistGrid()
             HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             HomeRecentlyPlayed(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-            ImageCard(Image = Icons.Default.Person, contentDescription = "album", title = "Amlum : karan Aujla")
+            ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
         }
 }
 
@@ -140,10 +140,10 @@ fun HomePlaylistGrid() {
                             .background(Color.DarkGray)
                             .width(180.dp)
                     ) {
-                        Icon(modifier = Modifier
-                            .background(Color.Green)
+                        Image(modifier = Modifier
                             .size(55.dp),
-                            imageVector = Icons.Outlined.Person, contentDescription = "Profile", tint = Color.White)
+                            contentScale = ContentScale.Crop,
+                            painter = painterResource(id = R.drawable.album), contentDescription = "Profile")
                         Text(modifier = Modifier.padding(5.dp),
                             text = "Liked Songs",
                             style = MaterialTheme.typography.bodyMedium,
@@ -181,7 +181,8 @@ fun HomeAlbums(
                     Image(modifier = Modifier
                         .size(150.dp)
                         .background(Color.Green),
-                        imageVector = Icons.Outlined.Person,
+                        contentScale = ContentScale.Crop,
+                        painter = painterResource(id = R.drawable.album),
                         contentDescription = "Albums")
                     Text(modifier = Modifier.padding(2.dp),
                         text = "Album name",
@@ -218,7 +219,8 @@ fun HomeRecentlyPlayed(
                     Image(modifier = Modifier
                         .size(120.dp)
                         .background(Color.Green),
-                        imageVector = Icons.Outlined.Person,
+                        contentScale = ContentScale.Crop,
+                        painter = painterResource(id = R.drawable.album),
                         contentDescription = "Albums")
                     Text(modifier = Modifier.padding(2.dp),
                         text = "Album name",
@@ -235,10 +237,10 @@ fun HomeRecentlyPlayed(
 
 @Composable
 fun ImageCard(
-    Image : ImageVector,
-    contentDescription : String,
-    title : String,
-    modifier : Modifier = Modifier
+    Image: Int,
+    contentDescription: String,
+    title: String,
+    modifier: Modifier = Modifier
 ) {
     Column() {
         repeat(2) {
@@ -259,9 +261,9 @@ fun ImageCard(
                 ) {
                     Image(
                         modifier = Modifier.fillMaxSize(),
-                        imageVector = Image,
+                        painter = painterResource(id = Image),
                         contentDescription = contentDescription,
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
                     Box(
                         modifier = Modifier

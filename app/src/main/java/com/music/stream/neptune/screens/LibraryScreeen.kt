@@ -1,4 +1,4 @@
-package com.music.stream.neptune
+package com.music.stream.neptune.screens
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

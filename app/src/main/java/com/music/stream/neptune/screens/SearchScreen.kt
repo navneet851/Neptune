@@ -1,4 +1,4 @@
-package com.music.stream.neptune
+package com.music.stream.neptune.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.music.stream.neptune.R
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalFoundationApi::class)
