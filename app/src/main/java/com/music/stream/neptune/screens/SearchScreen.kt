@@ -3,6 +3,7 @@ package com.music.stream.neptune.screens
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,12 +63,16 @@ fun SearchScreen() {
                     .padding(16.dp, 8.dp)
                 ){
 
-                Row(horizontalArrangement = Arrangement.SpaceBetween,
+                Row(horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .width(150.dp)) {
-                    Icon(imageVector = Icons.Default.Person, contentDescription = "")
-                    Column {
+                        .width(200.dp)) {
+                    Image(modifier = Modifier
+                        .size(60.dp),
+                        painter = painterResource(id = R.drawable.album),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "")
+                    Column(modifier = Modifier.padding(start = 10.dp)) {
                         Text(text = "Album name", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold )
                         Text(text = "Song singer Name", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }

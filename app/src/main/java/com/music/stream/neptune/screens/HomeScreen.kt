@@ -39,14 +39,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.music.stream.neptune.R
 
-@Preview
+
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
 
         Column(
             modifier = Modifier
@@ -55,7 +55,7 @@ fun HomeScreen() {
         ) {
             GreetingSection()
             ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
-            HomePlaylistGrid()
+            HomePlaylistGrid(navController)
             HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             HomeRecentlyPlayed(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
@@ -117,7 +117,7 @@ fun ChipSection(
 }
 
 @Composable
-fun HomePlaylistGrid() {
+fun HomePlaylistGrid(navController: NavController) {
     Column(
         modifier = Modifier
             .padding(0.dp, 10.dp)
@@ -139,6 +139,9 @@ fun HomePlaylistGrid() {
                             .clip(RoundedCornerShape(3.dp))
                             .background(Color.DarkGray)
                             .width(180.dp)
+                            .clickable {
+                                navController.navigate("Liked Songs")
+                            }
                     ) {
                         Image(modifier = Modifier
                             .size(55.dp),

@@ -2,6 +2,7 @@ package com.music.stream.neptune.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,53 +27,59 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.music.stream.neptune.R
+import com.music.stream.neptune.components.bottombar.BottomNavItem
 
-@Preview
 @Composable
-fun PlayerScreen() {
+fun PlayerScreen(navController: NavController) {
     var sliderPosition = remember{
         mutableStateOf(10f)
     }
-    Column(modifier = Modifier.fillMaxSize()) {
-        PlayerTopBar()
-        Spacer(modifier = Modifier.padding(16.dp))
-        Image(
-            modifier = Modifier
-                .height(385.dp)
-                .padding(20.dp)
-                .clip(RoundedCornerShape(10.dp))
-            ,painter = painterResource(id = R.drawable.album),
-            contentScale = ContentScale.Crop,
-            contentDescription = "")
-        Spacer(modifier = Modifier.padding(30.dp))
-        PlayerInfo()
-        Slider(
-            modifier = Modifier
-                .height(20.dp)
-                .padding(20.dp),
-            value = sliderPosition.value,
-            onValueChange = {
-                sliderPosition.value = it
-            },
-        )
-        Spacer(modifier = Modifier.padding(16.dp))
-        PlayerFull()
-        PlayerEndInfo()
+        Column(modifier = Modifier
+            .fillMaxSize()) {
+            PlayerTopBar(navController)
+            Spacer(modifier = Modifier.padding(16.dp))
+            Image(
+                modifier = Modifier
+                    .height(385.dp)
+                    .padding(20.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                ,painter = painterResource(id = R.drawable.album),
+                contentScale = ContentScale.Crop,
+                contentDescription = "")
+            Spacer(modifier = Modifier.padding(30.dp))
+            PlayerInfo()
+            Slider(
+                modifier = Modifier
+                    .height(20.dp)
+                    .padding(20.dp),
+                value = sliderPosition.value,
+                onValueChange = {
+                    sliderPosition.value = it
+                },
+            )
+            Spacer(modifier = Modifier.padding(16.dp))
+            PlayerFull()
+            PlayerEndInfo()
+        }
     }
-}
-
 @Composable
-fun PlayerTopBar() {
+fun PlayerTopBar(navController: NavController) {
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Icon(painter = painterResource(id = R.drawable.ic_down), tint = Color.White, contentDescription = "")
+        Icon(modifier = Modifier
+            .clickable {
+                       navController.navigate(BottomNavItem.Home.route)
+            },
+            painter = painterResource(id = R.drawable.ic_down),
+            tint = Color.White,
+            contentDescription = "")
         Text(text = "PLAYING SONG", color = Color.White)
         Icon(painter = painterResource(id = R.drawable.ic_dots), tint = Color.White, contentDescription = "")
     }
@@ -160,7 +167,7 @@ fun PlayerFull() {
                 modifier = Modifier
                     .size(32.dp),
                 tint = Color.Black,
-                painter = painterResource(id = R.drawable.ic_player_pause),
+                painter = painterResource(id = R.drawable.ic_playing),
                 contentDescription = "")
         }
 
