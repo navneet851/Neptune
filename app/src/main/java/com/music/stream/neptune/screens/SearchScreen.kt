@@ -55,7 +55,7 @@ fun SearchScreen() {
         stickyHeader {
             SearchStickyBar()
         }
-        items(50){
+        items(20){
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

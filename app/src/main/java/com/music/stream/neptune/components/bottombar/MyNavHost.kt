@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.music.stream.neptune.screens.AlbumScreen
 import com.music.stream.neptune.screens.HomeScreen
 import com.music.stream.neptune.screens.LibraryScreen
 import com.music.stream.neptune.screens.PlayerScreen
@@ -36,11 +37,17 @@ fun MyNavHost(navHostController: NavHostController, bottomBarState : MutableStat
             }
             LibraryScreen()
         }
-        composable("Liked Songs"){
+        composable("playsong"){
             LaunchedEffect(Unit) {
                 bottomBarState.value = false
             }
             PlayerScreen(navHostController)
+        }
+        composable("albums"){
+            LaunchedEffect(Unit){
+                bottomBarState.value = true
+            }
+            AlbumScreen(navHostController)
         }
     }
 }

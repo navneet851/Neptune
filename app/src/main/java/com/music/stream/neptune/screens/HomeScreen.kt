@@ -57,7 +57,7 @@ fun HomeScreen(navController: NavController) {
             ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
             HomePlaylistGrid(navController)
             HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-            HomeRecentlyPlayed(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
+            HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
         }
 }
@@ -140,7 +140,7 @@ fun HomePlaylistGrid(navController: NavController) {
                             .background(Color.DarkGray)
                             .width(180.dp)
                             .clickable {
-                                navController.navigate("Liked Songs")
+                                navController.navigate("albums")
                             }
                     ) {
                         Image(modifier = Modifier
@@ -203,6 +203,7 @@ fun HomeAlbums(
 
 @Composable
 fun HomeRecentlyPlayed(
+    navController: NavController,
     albums : List<String>
 ) {
     Text(modifier = Modifier
@@ -217,6 +218,9 @@ fun HomeRecentlyPlayed(
                 .padding(10.dp)
                 .width(130.dp)
                 .height(200.dp)
+                .clickable {
+                    navController.navigate("playsong")
+                }
             ){
                 Column(horizontalAlignment = Alignment.Start) {
                     Image(modifier = Modifier

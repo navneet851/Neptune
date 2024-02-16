@@ -1,7 +1,6 @@
 package com.music.stream.neptune.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +34,7 @@ import com.music.stream.neptune.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen() {
-    Scaffold( modifier = Modifier.background(Color.Gray),
+    Scaffold(
         topBar = {
                 TopAppBar(
                     title = {

@@ -36,7 +36,7 @@ import com.music.stream.neptune.components.bottombar.BottomNavItem
 @Composable
 fun PlayerScreen(navController: NavController) {
     var sliderPosition = remember{
-        mutableStateOf(10f)
+        mutableStateOf(0f)
     }
         Column(modifier = Modifier
             .fillMaxSize()) {
