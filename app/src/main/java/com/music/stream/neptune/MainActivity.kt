@@ -11,14 +11,20 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        actionBar?.hide()
+//        enableEdgeToEdge(
+//            statusBarStyle = SystemBarStyle.light(
+//                Color(0xFF121214).toArgb(), Color(0xFF121214).toArgb()
+//            )
+//        )
         super.onCreate(savedInstanceState)
 
         setContent {
             NeptuneTheme {
                 // A surface container using the 'background' color from the theme
 
-                App()
+                    App()
+
+
             }
         }
     }

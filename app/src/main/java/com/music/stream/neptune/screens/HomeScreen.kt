@@ -1,5 +1,7 @@
 package com.music.stream.neptune.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,45 +29,54 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.music.stream.neptune.R
+import com.music.stream.neptune.ui.theme.appbackground
+import java.time.LocalTime
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController) {
-
+fun HomeScreen(navController: NavController){
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .background(Color(appbackground.toArgb()))
         ) {
             GreetingSection()
-            ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
+//            ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
             HomePlaylistGrid(navController)
+            //HomePlaylistGrid1()
             HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
             ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
         }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GreetingSection(name : String = "User") {
+    val currentHour = LocalTime.now().hour
+    val greeting = when {
+        currentHour < 12 -> "Good Morning"
+        currentHour < 17 -> "Good Afternoon"
+        else -> "Good Evening"
+    }
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -73,9 +86,11 @@ fun GreetingSection(name : String = "User") {
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Text(
-                text = "Good Morning, $name",
+                text = "$greeting, $name",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
                 )
             Text(
                 text = "Have a Nice Day",
@@ -87,34 +102,34 @@ fun GreetingSection(name : String = "User") {
     }
 }
 
-@Composable
-fun ChipSection(
-    chip : List<String>
-) {
-    var selectedChip by remember {
-        mutableStateOf(0)
-    }
-    LazyRow{
-        items(chip.size){
-            Box(contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(15.dp, 0.dp, 0.dp, 0.dp)
-                    .clickable {
-                        selectedChip = it
-                    }
-                    .clip(RoundedCornerShape(50.dp))
-                    .background(
-                        if (selectedChip == it) Color.Green
-                        else Color.Gray
-                    )
-                    .padding(10.dp, 5.dp)
-
-            ){
-                Text(text = chip[it], color = Color.White)
-            }
-        }
-    }
-}
+//@Composable
+//fun ChipSection(
+//    chip : List<String>
+//) {
+//    var selectedChip by remember {
+//        mutableStateOf(0)
+//    }
+//    LazyRow{
+//        items(chip.size){
+//            Box(contentAlignment = Alignment.Center,
+//                modifier = Modifier
+//                    .padding(15.dp, 0.dp, 0.dp, 0.dp)
+//                    .clickable {
+//                        selectedChip = it
+//                    }
+//                    .clip(RoundedCornerShape(50.dp))
+//                    .background(
+//                        if (selectedChip == it) Color.Green
+//                        else Color.Gray
+//                    )
+//                    .padding(10.dp, 5.dp)
+//
+//            ){
+//                Text(text = chip[it], color = Color.White)
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun HomePlaylistGrid(navController: NavController) {
@@ -150,7 +165,9 @@ fun HomePlaylistGrid(navController: NavController) {
                         Text(modifier = Modifier.padding(5.dp),
                             text = "Liked Songs",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
                         )
 
                     }
@@ -162,6 +179,45 @@ fun HomePlaylistGrid(navController: NavController) {
 
 
 }
+
+@Preview
+@Composable
+fun HomePlaylistGrid1() {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2)
+    ) {
+        items(8) {
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(Color.DarkGray)
+                    .width(180.dp)
+                    .clickable {
+                        //navController.navigate("albums")
+                    }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(55.dp),
+                    contentScale = ContentScale.Crop,
+                    painter = painterResource(id = R.drawable.album), contentDescription = "Profile"
+                )
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    text = "Liked Songs",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
+                )
+
+            }
+        }
+
+    }
+}
+
 
 @Composable
 fun HomeAlbums(
@@ -249,7 +305,7 @@ fun ImageCard(
     title: String,
     modifier: Modifier = Modifier
 ) {
-    Column() {
+    Column {
         repeat(2) {
             Card(
                 shape = RoundedCornerShape(25.dp),
