@@ -1,4 +1,4 @@
-package com.music.stream.neptune.screens
+package com.music.stream.neptune.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.music.stream.neptune.R
-import com.music.stream.neptune.components.bottombar.BottomNavItem
+import com.music.stream.neptune.ui.navigation.Routes
 
 @Composable
 fun PlayerScreen(navController: NavController) {
@@ -75,7 +75,7 @@ fun PlayerTopBar(navController: NavController) {
     ) {
         Icon(modifier = Modifier
             .clickable {
-                       navController.navigate(BottomNavItem.Home.route)
+                       navController.navigate(Routes.Home.route)
             },
             painter = painterResource(id = R.drawable.ic_down),
             tint = Color.White,

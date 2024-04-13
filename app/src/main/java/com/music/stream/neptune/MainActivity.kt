@@ -6,16 +6,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import com.music.stream.neptune.ui.theme.NeptuneTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.S)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-//        enableEdgeToEdge(
-//            statusBarStyle = SystemBarStyle.light(
-//                Color(0xFF121214).toArgb(), Color(0xFF121214).toArgb()
-//            )
-//        )
+    @RequiresApi(Build.VERSION_CODES.S)
+    override fun onCreate(savedInstanceState: Bundle?){
+
+
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -29,4 +28,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
 

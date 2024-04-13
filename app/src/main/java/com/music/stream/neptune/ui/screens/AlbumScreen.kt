@@ -1,4 +1,4 @@
-package com.music.stream.neptune.screens
+package com.music.stream.neptune.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -17,7 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +51,7 @@ fun AlbumScreen(navController: NavController) {
                         modifier = Modifier.clickable {
                             navController.navigate("home")
                         },
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "",
                         tint = Color.White)
                 },

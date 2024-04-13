@@ -1,4 +1,4 @@
-package com.music.stream.neptune.screens
+package com.music.stream.neptune.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -1,4 +1,4 @@
-package com.music.stream.neptune.screens
+package com.music.stream.neptune.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -29,6 +29,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,23 +45,35 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.music.stream.neptune.R
 import com.music.stream.neptune.ui.theme.appbackground
+import com.music.stream.neptune.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.LocalTime
 
 
+@OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavController){
-        Column(
+
+    val homeViewModel : HomeViewModel = viewModel()
+
+    val albums by homeViewModel.albums.collectAsState()
+//    val artists by homeViewModel.artists.collectAsState()
+//    val songs by homeViewModel.songs.collectAsState()
+
+    Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .background(Color(appbackground.toArgb()))
-        ) {
+    ){
+            //fetchAlbums()
             GreetingSection()
-//            ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
+            //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
             HomePlaylistGrid(navController)
             //HomePlaylistGrid1()
             HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
@@ -67,6 +81,8 @@ fun HomeScreen(navController: NavController){
             ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
         }
 }
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -230,7 +246,7 @@ fun HomeAlbums(
             fontSize = 23.sp,
             fontWeight = FontWeight.Bold)
         LazyRow(modifier = Modifier.padding(6.dp)){
-            items(albums.size){
+            items(albums.size){album ->
                 Box(modifier = Modifier
                     .padding(10.dp)
                     .width(150.dp)

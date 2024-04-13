@@ -1,4 +1,4 @@
-package com.music.stream.neptune.screens
+package com.music.stream.neptune.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

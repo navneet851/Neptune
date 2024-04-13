@@ -1,4 +1,4 @@
-package com.music.stream.neptune.components.bottombar
+package com.music.stream.neptune.ui.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,30 +8,30 @@ import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.music.stream.neptune.screens.AlbumScreen
-import com.music.stream.neptune.screens.HomeScreen
-import com.music.stream.neptune.screens.LibraryScreen
-import com.music.stream.neptune.screens.PlayerScreen
-import com.music.stream.neptune.screens.SearchScreen
+import com.music.stream.neptune.ui.screens.AlbumScreen
+import com.music.stream.neptune.ui.screens.HomeScreen
+import com.music.stream.neptune.ui.screens.LibraryScreen
+import com.music.stream.neptune.ui.screens.PlayerScreen
+import com.music.stream.neptune.ui.screens.SearchScreen
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MyNavHost(navHostController: NavHostController, bottomBarState : MutableState<Boolean>) {
 
-    NavHost(navController = navHostController, startDestination = BottomNavItem.Home.route){
-        composable(BottomNavItem.Home.route){
+    NavHost(navController = navHostController, startDestination = Routes.Home.route){
+        composable(Routes.Home.route){
             LaunchedEffect(Unit) {
                 bottomBarState.value = true
             }
                 HomeScreen(navHostController)
         }
-        composable(BottomNavItem.Search.route){
+        composable(Routes.Search.route){
             LaunchedEffect(Unit) {
                 bottomBarState.value = true
             }
             SearchScreen()
         }
-        composable(BottomNavItem.Library.route) {
+        composable(Routes.Library.route) {
             LaunchedEffect(Unit) {
                 bottomBarState.value = true
             }

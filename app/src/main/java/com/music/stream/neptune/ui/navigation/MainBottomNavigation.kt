@@ -1,4 +1,4 @@
-package com.music.stream.neptune.components.bottombar
+package com.music.stream.neptune.ui.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -42,9 +42,9 @@ class NoRippleInteractionSource : MutableInteractionSource {
 @Composable
 fun MainBottomNavigation(navController: NavController, bottomBarState: MutableState<Boolean>) {
     val navItems = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Search,
-        BottomNavItem.Library
+        Routes.Home,
+        Routes.Search,
+        Routes.Library
     )
     AnimatedVisibility(
         visible = bottomBarState.value,
