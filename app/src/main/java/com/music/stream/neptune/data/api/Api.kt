@@ -19,7 +19,10 @@ class Api @Inject constructor(){
      suspend fun getAlbums(): Flow<List<AlbumsModel>> {
          val firestore: FirebaseFirestore = Firebase.firestore
         return flow {
-            val snapshot = firestore.collection("albums").get().await()
+            val snapshot = firestore.collection("albums")
+                .whereGreaterThan("id", -1)
+                .orderBy("id")
+                .get().await()
             val albums = snapshot.documents.mapNotNull { it.toObject(AlbumsModel::class.java) }
             Log.d("getting", albums.toString())
             emit(albums)

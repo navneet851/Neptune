@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,11 +78,9 @@ fun HomeScreen(navController: NavController){
             GreetingSection()
             //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
             HomePlaylistGrid(navController, albums)
-
-            //HomePlaylistGrid1(albums)
             HomeAlbums(albums = albums)
             HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-            ImageCard(image = R.drawable.album, contentDescription = "album", artists = artists)
+            ImageCard(navController, artists)
         }
 }
 
@@ -201,49 +198,6 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
             }
         }
     }
-
-
-}
-
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun HomePlaylistGrid1( albums : List<AlbumsModel>) {
-    val chunkedAlbums = albums.chunked(2)
-    LazyColumn {
-        items(chunkedAlbums.size) {
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(Color.DarkGray)
-                    .width(180.dp)
-                    .clickable {
-                        //navController.navigate("albums")
-                    }
-            ) {
-                for (album in chunkedAlbums[it]) {
-                    GlideImage(
-                        modifier = Modifier
-                            .size(55.dp),
-                        contentScale = ContentScale.Crop,
-                        model = R.drawable.album,
-                        contentDescription = "Profile"
-                    )
-                    Text(
-                        modifier = Modifier.padding(5.dp),
-                        text = "dfdvf",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White
-                    )
-
-                }
-            }
-
-        }
-    }
 }
 
 
@@ -330,15 +284,15 @@ fun HomeRecentlyPlayed(
 }
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageCard(
-    image: Int,
-    contentDescription: String,
-    artists : List<ArtistsModel>,
+    navController: NavController,
+    artists: List<ArtistsModel>,
     modifier: Modifier = Modifier
 ) {
     Column {
-        repeat(artists.size) {
+        repeat(artists.size) { artist ->
             Card(
                 shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(
@@ -354,10 +308,10 @@ fun ImageCard(
                         .fillMaxSize()
                         .background(Color.Green)
                 ) {
-                    Image(
+                    GlideImage(
                         modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(id = image),
-                        contentDescription = contentDescription,
+                        model = artists[artist].coverUri,
+                        contentDescription = "artists",
                         contentScale = ContentScale.Crop
                     )
                     Box(
@@ -380,7 +334,7 @@ fun ImageCard(
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Text(
-                            text = artists[it].name,
+                            text = artists[artist].name,
                             style = TextStyle(color = Color.White, fontSize = 16.sp),
                             textAlign = TextAlign.Center
                         )
