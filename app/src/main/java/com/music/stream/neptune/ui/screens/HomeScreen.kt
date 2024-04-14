@@ -1,6 +1,7 @@
 package com.music.stream.neptune.ui.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,9 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -42,28 +42,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
+import com.music.stream.neptune.data.entity.AlbumsModel
+import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.ui.theme.appbackground
 import com.music.stream.neptune.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.time.LocalTime
 
 
-@OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController: NavController){
 
-    val homeViewModel : HomeViewModel = viewModel()
-
+    val homeViewModel : HomeViewModel = hiltViewModel()
     val albums by homeViewModel.albums.collectAsState()
-//    val artists by homeViewModel.artists.collectAsState()
-//    val songs by homeViewModel.songs.collectAsState()
+    val artists by homeViewModel.artists.collectAsState()
+    val songs by homeViewModel.songs.collectAsState()
+
+
+
+    //Log.d("checker", albums.toString())
 
     Column(
             modifier = Modifier
@@ -71,14 +75,15 @@ fun HomeScreen(navController: NavController){
                 .verticalScroll(rememberScrollState())
                 .background(Color(appbackground.toArgb()))
     ){
-            //fetchAlbums()
+
             GreetingSection()
             //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
-            HomePlaylistGrid(navController)
-            //HomePlaylistGrid1()
-            HomeAlbums(albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
+            HomePlaylistGrid(navController, albums)
+
+            //HomePlaylistGrid1(albums)
+            HomeAlbums(albums = albums)
             HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-            ImageCard(Image = R.drawable.album, contentDescription = "album", title = "Amlum : karan Aujla")
+            ImageCard(image = R.drawable.album, contentDescription = "album", artists = artists)
         }
 }
 
@@ -147,21 +152,24 @@ fun GreetingSection(name : String = "User") {
 //    }
 //}
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomePlaylistGrid(navController: NavController) {
+fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
+    val chunkedAlbums = albums.chunked(2)
+    Log.d("giveme", chunkedAlbums.toString())
     Column(
         modifier = Modifier
             .padding(0.dp, 10.dp)
     ){
-        repeat(4){
-            LazyRow(verticalAlignment = Alignment.CenterVertically,
+        repeat(chunkedAlbums.size){
+            Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .padding(15.dp, 5.dp, 7.dp, 0.dp)
                     .fillMaxWidth()
             )
             {
-                items(2){
+                repeat(chunkedAlbums[it].size){ album ->
                     Row(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
@@ -174,12 +182,13 @@ fun HomePlaylistGrid(navController: NavController) {
                                 navController.navigate("albums")
                             }
                     ) {
-                        Image(modifier = Modifier
+                        GlideImage(modifier = Modifier
                             .size(55.dp),
                             contentScale = ContentScale.Crop,
-                            painter = painterResource(id = R.drawable.album), contentDescription = "Profile")
+                            model = chunkedAlbums[it][album].coverUri,
+                            contentDescription = "Profile")
                         Text(modifier = Modifier.padding(5.dp),
-                            text = "Liked Songs",
+                            text = chunkedAlbums[it][album].name,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
                             fontSize = 12.sp,
@@ -196,13 +205,13 @@ fun HomePlaylistGrid(navController: NavController) {
 
 }
 
-@Preview
+
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun HomePlaylistGrid1() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2)
-    ) {
-        items(8) {
+fun HomePlaylistGrid1( albums : List<AlbumsModel>) {
+    val chunkedAlbums = albums.chunked(2)
+    LazyColumn {
+        items(chunkedAlbums.size) {
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
@@ -215,29 +224,33 @@ fun HomePlaylistGrid1() {
                         //navController.navigate("albums")
                     }
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(55.dp),
-                    contentScale = ContentScale.Crop,
-                    painter = painterResource(id = R.drawable.album), contentDescription = "Profile"
-                )
-                Text(
-                    modifier = Modifier.padding(5.dp),
-                    text = "Liked Songs",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White
-                )
+                for (album in chunkedAlbums[it]) {
+                    GlideImage(
+                        modifier = Modifier
+                            .size(55.dp),
+                        contentScale = ContentScale.Crop,
+                        model = R.drawable.album,
+                        contentDescription = "Profile"
+                    )
+                    Text(
+                        modifier = Modifier.padding(5.dp),
+                        text = "dfdvf",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
 
+                }
             }
-        }
 
+        }
     }
 }
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeAlbums(
-    albums : List<String>
+    albums : List<AlbumsModel>
 ) {
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
@@ -253,18 +266,21 @@ fun HomeAlbums(
                     .height(200.dp)
             ){
                 Column(horizontalAlignment = Alignment.Start) {
-                    Image(modifier = Modifier
+
+
+
+                    GlideImage(modifier = Modifier
                         .size(150.dp)
                         .background(Color.Green),
                         contentScale = ContentScale.Crop,
-                        painter = painterResource(id = R.drawable.album),
+                        model = albums[album].coverUri,
                         contentDescription = "Albums")
                     Text(modifier = Modifier.padding(2.dp),
-                        text = "Album name",
+                        text = albums[album].name,
                         color = Color.White,
                         fontWeight = FontWeight.Bold)
                     Text(modifier = Modifier.padding(2.dp),
-                        text = "Artist name",
+                        text = albums[album].artists,
                         color = Color.White)
                 }
 
@@ -316,13 +332,13 @@ fun HomeRecentlyPlayed(
 
 @Composable
 fun ImageCard(
-    Image: Int,
+    image: Int,
     contentDescription: String,
-    title: String,
+    artists : List<ArtistsModel>,
     modifier: Modifier = Modifier
 ) {
     Column {
-        repeat(2) {
+        repeat(artists.size) {
             Card(
                 shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(
@@ -340,7 +356,7 @@ fun ImageCard(
                 ) {
                     Image(
                         modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(id = Image),
+                        painter = painterResource(id = image),
                         contentDescription = contentDescription,
                         contentScale = ContentScale.Crop
                     )
@@ -364,7 +380,7 @@ fun ImageCard(
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Text(
-                            text = title,
+                            text = artists[it].name,
                             style = TextStyle(color = Color.White, fontSize = 16.sp),
                             textAlign = TextAlign.Center
                         )
