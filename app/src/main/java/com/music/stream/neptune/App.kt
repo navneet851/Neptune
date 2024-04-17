@@ -35,7 +35,7 @@ fun App() {
         "library" -> {
             bottomBarState.value = true
         }
-        "Liked Songs" -> {
+        "album" -> {
             bottomBarState.value = false
         }
     }

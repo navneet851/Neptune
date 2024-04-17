@@ -11,4 +11,6 @@ sealed class Routes(
     object Home : Routes(icon = R.drawable.ic_home_filled, label = "Home", route = "home")
     object Search : Routes(icon = R.drawable.ic_search_big, label = "Search", route = "search")
     object Library : Routes(icon = R.drawable.ic_library_big, label = "Library", route = "library")
+    object Album : Routes(0, "Album", "album")
+    object Player : Routes(0, "Player", "player")
 }

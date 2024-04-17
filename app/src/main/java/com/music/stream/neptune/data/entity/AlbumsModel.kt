@@ -5,6 +5,7 @@ data class AlbumsModel(
     val artists : String,
     val coverUri : String,
     val name : String,
+    val time : String
 ){
-    constructor() : this( -1,"" ,"" ,"")
+    constructor() : this( -1,"" ,"" ,"", "")
 }

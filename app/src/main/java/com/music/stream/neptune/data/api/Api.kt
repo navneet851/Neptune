@@ -16,16 +16,20 @@ class Api @Inject constructor(){
     private val firestore: FirebaseFirestore = Firebase.firestore
 
 
-     suspend fun getAlbums(): Flow<List<AlbumsModel>> {
-         val firestore: FirebaseFirestore = Firebase.firestore
+     suspend fun getAlbums(): Flow<Response<List<AlbumsModel>>> {
         return flow {
+            emit(Response.Loading())
             val snapshot = firestore.collection("albums")
                 .whereGreaterThan("id", -1)
                 .orderBy("id")
                 .get().await()
             val albums = snapshot.documents.mapNotNull { it.toObject(AlbumsModel::class.java) }
-            Log.d("getting", albums.toString())
-            emit(albums)
+            if (albums != null){
+                emit(Response.Success(albums))
+            }
+            else{
+                emit(Response.Error("fatal error"))
+            }
 
         }
     }

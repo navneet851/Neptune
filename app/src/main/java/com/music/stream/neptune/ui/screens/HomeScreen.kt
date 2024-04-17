@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,10 +48,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
+import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.ArtistsModel
-import com.music.stream.neptune.ui.theme.appbackground
+import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.navigation.Routes
+import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.HomeViewModel
 import java.time.LocalTime
 
@@ -62,26 +68,55 @@ fun HomeScreen(navController: NavController){
     val homeViewModel : HomeViewModel = hiltViewModel()
     val albums by homeViewModel.albums.collectAsState()
     val artists by homeViewModel.artists.collectAsState()
-    val songs by homeViewModel.songs.collectAsState()
 
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(AppBackground.toArgb()))
+    ) {
+        when(albums){
+            is Response.Loading -> {
+                Log.d("homeMain", "loading...")
+                Loader()
+            }
+
+            is Response.Success -> {
+                val response = (albums as Response.Success).data
+                Log.d("homeMain", "Success.")
+                SumUpHomeScreen(navController = navController, albums = response, artists = artists)
+            }
+
+            is Response.Error -> {
+                Log.d("homeMain", "Error!!")
+            }
+        }
+    }
 
 
     //Log.d("checker", albums.toString())
 
+
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SumUpHomeScreen(navController : NavController, albums: List<AlbumsModel>, artists: List<ArtistsModel>) {
     Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(Color(appbackground.toArgb()))
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .background(Color(AppBackground.toArgb()))
     ){
 
-            GreetingSection()
-            //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
-            HomePlaylistGrid(navController, albums)
-            HomeAlbums(albums = albums)
-            HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-            ImageCard(navController, artists)
-        }
+        GreetingSection()
+        //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
+        HomePlaylistGrid(navController, albums)
+        HomeAlbums(albums = albums)
+        HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
+        HomeArtists(artists = artists)
+        ImageCard(navController, albums)
+    }
 }
 
 
@@ -104,7 +139,7 @@ fun GreetingSection(name : String = "User") {
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Text(
-                text = "$greeting, $name",
+                text = greeting,
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
                 fontSize = 22.sp,
@@ -113,7 +148,8 @@ fun GreetingSection(name : String = "User") {
             Text(
                 text = "Have a Nice Day",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
+                color = Color.White,
+                fontSize = 13.sp
                 )
         }
         Icon(imageVector = Icons.Outlined.Person, contentDescription = "Profile", tint = Color.White)
@@ -173,16 +209,18 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
                         modifier = Modifier
                             .padding(2.dp)
                             .clip(RoundedCornerShape(3.dp))
-                            .background(Color.DarkGray)
+                            .background(Color(GridBackground.toArgb()))
                             .width(180.dp)
                             .clickable {
-                                navController.navigate("albums")
+                                navController.navigate("album/${album}")
                             }
                     ) {
                         GlideImage(modifier = Modifier
                             .size(55.dp),
                             contentScale = ContentScale.Crop,
                             model = chunkedAlbums[it][album].coverUri,
+                            loading = placeholder(R.drawable.placeholder),
+                            failure = placeholder(R.drawable.placeholder),
                             contentDescription = "Profile")
                         Text(modifier = Modifier.padding(5.dp),
                             text = chunkedAlbums[it][album].name,
@@ -210,32 +248,37 @@ fun HomeAlbums(
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
         text = "Albums",
         color = Color.White,
-            fontSize = 23.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold)
         LazyRow(modifier = Modifier.padding(6.dp)){
             items(albums.size){album ->
                 Box(modifier = Modifier
                     .padding(10.dp)
                     .width(150.dp)
-                    .height(200.dp)
+                    .height(195.dp)
             ){
-                Column(horizontalAlignment = Alignment.Start) {
-
-
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    ) {
 
                     GlideImage(modifier = Modifier
-                        .size(150.dp)
-                        .background(Color.Green),
+                        .size(150.dp),
                         contentScale = ContentScale.Crop,
                         model = albums[album].coverUri,
+                        loading = placeholder(R.drawable.placeholder),
+                        failure = placeholder(R.drawable.placeholder),
                         contentDescription = "Albums")
-                    Text(modifier = Modifier.padding(2.dp),
+                    Text(
+                        fontSize = 13.sp,
                         text = albums[album].name,
+                        textAlign = TextAlign.Center,
                         color = Color.White,
                         fontWeight = FontWeight.Bold)
-                    Text(modifier = Modifier.padding(2.dp),
+                    Text(
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
                         text = albums[album].artists,
-                        color = Color.White)
+                        color = Color.LightGray)
                 }
 
             }
@@ -259,9 +302,9 @@ fun HomeRecentlyPlayed(
             Box(modifier = Modifier
                 .padding(10.dp)
                 .width(130.dp)
-                .height(200.dp)
+                .height(140.dp)
                 .clickable {
-                    navController.navigate("playsong")
+                    navController.navigate(Routes.Player.route)
                 }
             ){
                 Column(horizontalAlignment = Alignment.Start) {
@@ -283,16 +326,66 @@ fun HomeRecentlyPlayed(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun HomeArtists(
+    artists : List<ArtistsModel>
+) {
+    Text(modifier = Modifier
+        .padding(20.dp, 10.dp, 0.dp, 0.dp),
+        text = "Best of Artists",
+        color = Color.White,
+        fontSize = 23.sp,
+        fontWeight = FontWeight.Bold)
+    LazyRow(modifier = Modifier.padding(6.dp)){
+        items(artists.size){artist ->
+            Box(modifier = Modifier
+                .padding(10.dp)
+                .width(150.dp)
+                .height(200.dp)
+            ){
+                Column(horizontalAlignment = Alignment.Start) {
+
+
+
+                    GlideImage(modifier = Modifier
+                        .size(150.dp),
+                        contentScale = ContentScale.Crop,
+                        model = artists[artist].coverUri,
+                        loading = placeholder(R.drawable.placeholder),
+                        failure = placeholder(R.drawable.placeholder),
+                        contentDescription = "Albums")
+                    Text(modifier = Modifier.padding(2.dp),
+                        text = "This is ${artists[artist].name}",
+                        color = Color.LightGray,
+                        fontSize = 11.sp)
+                }
+
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageCard(
     navController: NavController,
-    artists: List<ArtistsModel>,
+    allAlbums: List<AlbumsModel>,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        repeat(artists.size) { artist ->
+
+    val albums = allAlbums.takeLast(3)
+    Text(modifier = Modifier
+        .padding(20.dp, 10.dp, 0.dp, 0.dp),
+        text = "Discover",
+        color = Color.White,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold)
+    Column(
+        modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 50.dp)
+    ) {
+        repeat(albums.size) { album ->
             Card(
                 shape = RoundedCornerShape(25.dp),
                 elevation = CardDefaults.cardElevation(
@@ -306,12 +399,13 @@ fun ImageCard(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Green)
                 ) {
                     GlideImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = artists[artist].coverUri,
+                        model = albums[album].coverUri,
                         contentDescription = "artists",
+                        loading = placeholder(R.drawable.placeholder),
+                        failure = placeholder(R.drawable.placeholder),
                         contentScale = ContentScale.Crop
                     )
                     Box(
@@ -330,12 +424,12 @@ fun ImageCard(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(12.dp),
+                            .padding(0.dp, 0.dp, 0.dp, 30.dp),
                         contentAlignment = Alignment.BottomCenter
                     ) {
                         Text(
-                            text = artists[artist].name,
-                            style = TextStyle(color = Color.White, fontSize = 16.sp),
+                            text = "Album : ${albums[album].name}",
+                            style = TextStyle(color = Color.White, fontSize = 20.sp),
                             textAlign = TextAlign.Center
                         )
 
