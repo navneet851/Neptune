@@ -7,6 +7,7 @@ import com.google.firebase.ktx.Firebase
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -24,12 +25,8 @@ class Api @Inject constructor(){
                 .orderBy("id")
                 .get().await()
             val albums = snapshot.documents.mapNotNull { it.toObject(AlbumsModel::class.java) }
-            if (albums != null){
-                emit(Response.Success(albums))
-            }
-            else{
-                emit(Response.Error("fatal error"))
-            }
+            delay(200)
+            emit(Response.Success(albums))
 
         }
     }

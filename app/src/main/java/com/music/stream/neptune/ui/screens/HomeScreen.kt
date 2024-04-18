@@ -212,7 +212,9 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
                             .background(Color(GridBackground.toArgb()))
                             .width(180.dp)
                             .clickable {
-                                navController.navigate("album/${album}")
+                                val albumName = chunkedAlbums[it][album].name
+                                Log.d("check", albumName.toString())
+                                navController.navigate("album/$albumName")
                             }
                     ) {
                         GlideImage(modifier = Modifier

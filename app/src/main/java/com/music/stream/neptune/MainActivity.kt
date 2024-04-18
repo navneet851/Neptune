@@ -10,17 +10,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?){
-
-
+//        enableEdgeToEdge(
+//            statusBarStyle = SystemBarStyle.light(
+//                Color.TRANSPARENT,
+//                Color.TRANSPARENT
+//            )
+//        )
         super.onCreate(savedInstanceState)
 
         setContent {
             NeptuneTheme {
                 // A surface container using the 'background' color from the theme
-
                     App()
 
 
