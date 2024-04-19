@@ -3,6 +3,7 @@ package com.music.stream.neptune.ui.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -32,9 +34,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,6 +60,15 @@ import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
 
 @Composable
 fun AlbumScreen(navController: NavController, albumName: String) {
+
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = Color.White.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+//        }
+//    }
 
     val albumViewModel : AlbumViewModel = hiltViewModel()
     val songs by albumViewModel.songs.collectAsState()
@@ -132,17 +147,17 @@ fun SumUpAlbumScreen(
             .verticalScroll(rememberScrollState())
         ) {
 
-            //Spacer(modifier = Modifier.padding(30.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp)
+                    .height(420.dp)
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(Color.White, Color(AppBackground.toArgb())),
                             startY = -1000f,
 
-                        ),
+                            ),
 
                         )
                 ,
@@ -154,7 +169,7 @@ fun SumUpAlbumScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     GlideImage(
-                        modifier = Modifier.size(210.dp),
+                        modifier = Modifier.size(225.dp),
                         model = albumSongs[0].coverUri,
                         failure = placeholder(R.drawable.placeholder),
                         //loading = placeholder(R.drawable.album),
@@ -165,9 +180,9 @@ fun SumUpAlbumScreen(
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(modifier = Modifier
                     .padding(20.dp, 5.dp, 0.dp, 0.dp),
-                    text = albumName.uppercase(),
+                    text = albumName,
                     color = Color.White,
-                    fontSize = 25.sp,
+                    fontSize = 23.sp,
                     fontWeight = FontWeight.Bold)
                 Text(modifier = Modifier
                     .padding(20.dp, 0.dp, 0.dp, 0.dp),
@@ -183,9 +198,58 @@ fun SumUpAlbumScreen(
                     fontWeight = FontWeight.Bold
                 )
 
+                Row(horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp, 0.dp)
+                ){
+
+                    Row(horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .width(80.dp)
+                    ) {
+                        GlideImage(
+                            modifier = Modifier
+                                .height(44.dp)
+                                .width(34.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .border(2.dp, Color.Gray, RectangleShape)
+                                .padding(5.dp),
+                            model = albumSongs[0].coverUri,
+                            failure = placeholder(R.drawable.placeholder),
+                            //loading = placeholder(R.drawable.album),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "",
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .size(23.dp),
+                            painter = painterResource(id = R.drawable.ic_add),
+                            tint = Color.White,
+                            contentDescription = "")
+                    }
+
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(100.dp))
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(25.dp),
+                            tint = Color.Black,
+                            painter = painterResource(id = R.drawable.ic_playing),
+                            contentDescription = "")
+                    }
+                }
+
             }
 
-            Spacer(modifier = Modifier.padding(25.dp))
+//            Spacer(modifier = Modifier.padding(25.dp))
 
 
             repeat(albumSongs.size) {song ->
@@ -194,7 +258,7 @@ fun SumUpAlbumScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 8.dp)
+                        .padding(20.dp, 8.dp)
                 ) {
 
                     Row(
@@ -208,18 +272,18 @@ fun SumUpAlbumScreen(
 //                            contentScale = ContentScale.Crop,
 //                            contentDescription = ""
 //                        )
-                        Column(modifier = Modifier.padding(start = 10.dp)) {
+                        Column {
                             Text(
                                 text = albumSongs[song].title,
                                 color = Color.White,
                                 fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Medium
                             )
                             Text(
                                 text = albumSongs[song].singer,
                                 color = Color.Gray,
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
@@ -229,6 +293,8 @@ fun SumUpAlbumScreen(
                     )
                 }
             }
+            Spacer(modifier = Modifier.padding(80.dp))
         }
+
     }
 }
