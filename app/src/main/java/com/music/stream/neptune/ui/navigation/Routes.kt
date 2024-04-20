@@ -13,4 +13,5 @@ sealed class Routes(
     object Library : Routes(icon = R.drawable.ic_library_big, label = "Library", route = "library")
     object Album : Routes(0, "Album", "album")
     object Player : Routes(0, "Player", "player")
+    object Artist : Routes(0, "Artist", "artist")
 }

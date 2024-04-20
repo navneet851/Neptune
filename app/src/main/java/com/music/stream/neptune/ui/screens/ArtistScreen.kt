@@ -51,39 +51,41 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
-import com.music.stream.neptune.data.entity.AlbumsModel
+import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
-import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
+import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
 
 
 @Composable
-fun AlbumScreen(navController: NavController, albumName: String) {
+fun ArtistScreen(navController: NavController, artistName: String) {
 
 
-    val albumViewModel : AlbumViewModel = hiltViewModel()
-    val songs by albumViewModel.songs.collectAsState()
-    val albums by albumViewModel.albums.collectAsState()
+    val artistViewModel : ArtistViewModel = hiltViewModel()
+    val songs by artistViewModel.songs.collectAsState()
+    val artists by artistViewModel.artists.collectAsState()
 
-    Log.d("check", albumName.toString())
+    Log.d("checku", artistName.toString())
+    Log.d("checkun", songs.toString())
+    Log.d("checku", artists.toString())
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(AppBackground.toArgb()))
     ) {
-        when(albums){
+        when(songs){
             is Response.Loading -> {
-                Log.d("homeMain", "loading...")
+                Log.d("homeMain", "loading-artists-songs..")
                 Loader()
             }
 
             is Response.Success -> {
-                val albumsResponse = (albums as Response.Success).data
                 val songsResponse = (songs as Response.Success).data
-                Log.d("homeMain", "Success.")
-                SumUpAlbumScreen(navController = navController, albumsResponse, songsResponse, albumName)
+                val artistsResponse = (artists as Response.Success).data
+                Log.d("homeMain", "Success-artists-songs. ${artistsResponse.toString()}")
+                SumUpArtistScreen(navController = navController, songsResponse.shuffled(), artistsResponse, artistName)
             }
 
             is Response.Error -> {
@@ -96,18 +98,18 @@ fun AlbumScreen(navController: NavController, albumName: String) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun SumUpAlbumScreen(
+fun SumUpArtistScreen(
     navController: NavController,
-    albums: List<AlbumsModel>,
     songs: List<SongsModel>,
-    albumName: String
+    artists: List<ArtistsModel>,
+    artistName: String
 ) {
 
-    val albumSongs = songs.filter {
-        albumName == it.album
+    val artistSongs = songs.filter {
+        artistName == it.singer
     }
-    val album = albums.filter{
-        albumName == it.name
+    val artist = artists.filter{
+        artistName == it.name
     }
     Scaffold(
         topBar = {
@@ -154,7 +156,7 @@ fun SumUpAlbumScreen(
                         )
                 ,
                 verticalArrangement = Arrangement.Center,
-               // horizontalAlignment = Alignment.CenterHorizontally
+                // horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.padding(25.dp))
 
@@ -164,7 +166,7 @@ fun SumUpAlbumScreen(
                 ) {
                     GlideImage(
                         modifier = Modifier.size(225.dp),
-                        model = albumSongs[0].coverUri,
+                        model = artist[0].coverUri,
                         failure = placeholder(R.drawable.placeholder),
                         //loading = placeholder(R.drawable.album),
                         //contentScale = ContentScale.Crop,
@@ -174,23 +176,23 @@ fun SumUpAlbumScreen(
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(modifier = Modifier
                     .padding(20.dp, 5.dp, 0.dp, 0.dp),
-                    text = albumName,
+                    text = artistName,
                     color = Color.White,
-                    fontSize = 23.sp,
-                    fontWeight = FontWeight.Bold)
-                Text(modifier = Modifier
-                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
-                    text = albumSongs[0].singer,
-                    color = Color.White,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Medium)
                 Text(modifier = Modifier
                     .padding(20.dp, 0.dp, 0.dp, 0.dp),
-                    text = "Album : ${album[0].time}",
+                    text = "Made for You",
                     color = Color.Gray,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium)
+//                Text(modifier = Modifier
+//                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
+//                    text = "Album : ${artist[0].time}",
+//                    color = Color.Gray,
+//                    fontSize = 11.sp,
+//                    fontWeight = FontWeight.Medium
+//                )
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -211,7 +213,7 @@ fun SumUpAlbumScreen(
                                 .clip(RoundedCornerShape(4.dp))
                                 .border(2.dp, Color.Gray, RectangleShape)
                                 .padding(5.dp),
-                            model = albumSongs[0].coverUri,
+                            model = artist[0].coverUri,
                             failure = placeholder(R.drawable.placeholder),
                             //loading = placeholder(R.drawable.album),
                             contentScale = ContentScale.Crop,
@@ -246,7 +248,7 @@ fun SumUpAlbumScreen(
 //            Spacer(modifier = Modifier.padding(25.dp))
 
 
-            repeat(albumSongs.size) {song ->
+            repeat(artistSongs.size) { song ->
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -258,23 +260,23 @@ fun SumUpAlbumScreen(
                     Row(
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier.width(280.dp)
                     ) {
-//                        GlideImage(
-//                            modifier = Modifier.size(60.dp),
-//                            model = albumSongs[song].coverUri,
-//                            contentScale = ContentScale.Crop,
-//                            contentDescription = ""
-//                        )
+                        GlideImage(
+                            modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp).size(50.dp),
+                            model = artistSongs[song].coverUri,
+                            contentScale = ContentScale.Crop,
+                            contentDescription = ""
+                        )
                         Column {
                             Text(
-                                text = albumSongs[song].title,
+                                text = artistSongs[song].title,
                                 color = Color.White,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = albumSongs[song].singer,
+                                text = artistSongs[song].singer,
                                 color = Color.Gray,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium

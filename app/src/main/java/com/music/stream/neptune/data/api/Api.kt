@@ -32,23 +32,26 @@ class Api @Inject constructor(){
     }
 
 
-    suspend fun getArtists(): Flow<List<ArtistsModel>> {
+    suspend fun getArtists(): Flow<Response<List<ArtistsModel>>> {
         return flow {
+            emit(Response.Loading())
             val snapshot = firestore.collection("artists").get().await()
             val artists = snapshot.documents.mapNotNull { it.toObject(ArtistsModel::class.java) }
             Log.d("getting", artists.toString())
-            emit(artists)
+            emit(Response.Success(artists))
 
         }
     }
 
 
-    suspend fun getSongs(): Flow<List<SongsModel>> {
+    suspend fun getSongs(): Flow<Response<List<SongsModel>>> {
         return flow {
+            emit(Response.Loading())
             val snapshot = firestore.collection("songs").get().await()
             val songs = snapshot.documents.mapNotNull { it.toObject(SongsModel::class.java) }
-            Log.d("getting", songs.toString())
-            emit(songs)
+            Log.d("checkuu", songs.toString())
+            //delay(2000)
+            emit(Response.Success(songs))
 
         }
     }

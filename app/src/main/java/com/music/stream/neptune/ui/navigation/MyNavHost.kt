@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.music.stream.neptune.ui.screens.AlbumScreen
+import com.music.stream.neptune.ui.screens.ArtistScreen
 import com.music.stream.neptune.ui.screens.HomeScreen
 import com.music.stream.neptune.ui.screens.LibraryScreen
 import com.music.stream.neptune.ui.screens.PlayerScreen
@@ -44,29 +45,22 @@ fun MyNavHost(navHostController: NavHostController, bottomBarState : MutableStat
             PlayerScreen(navHostController)
         }
 
-        composable("album/{uId}") { navBackStackEntry ->
+        composable("${Routes.Album.route}/{uString}") { navBackStackEntry ->
             /* Extracting the id from the route */
-            val uId = navBackStackEntry.arguments?.getString("uId")
+            val uId = navBackStackEntry.arguments?.getString("uString")
             /* We check if it's not null */
             uId?.let { id->
-                AlbumScreen(navHostController, id)
+                AlbumScreen(navController = navHostController, albumName = id)
             }
         }
-//        composable(
-//            route = "album/{albumIndex}",
-//            arguments = listOf(
-//                navArgument("albumIndex") {
-//                    type = NavType.IntType
-//                }
-//            )
-//        ){
-//            LaunchedEffect(Unit){
-//                bottomBarState.value = true
-//            }
-//            AlbumScreen(
-//                navHostController,
-//                it.arguments!!.getInt("albumIndex")
-//                )
-//        }
+
+        composable("${Routes.Artist.route}/{aString}") { navBackStackEntry ->
+            /* Extracting the id from the route */
+            val aId = navBackStackEntry.arguments?.getString("aString")
+            /* We check if it's not null */
+            aId?.let { aid->
+                ArtistScreen(navHostController, aid)
+            }
+        }
     }
 }

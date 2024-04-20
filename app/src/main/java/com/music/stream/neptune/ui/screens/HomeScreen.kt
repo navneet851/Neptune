@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -73,6 +74,7 @@ fun HomeScreen(navController: NavController){
         modifier = Modifier
             .fillMaxSize()
             .background(Color(AppBackground.toArgb()))
+            .statusBarsPadding()
     ) {
         when(albums){
             is Response.Loading -> {
@@ -81,9 +83,10 @@ fun HomeScreen(navController: NavController){
             }
 
             is Response.Success -> {
-                val response = (albums as Response.Success).data
+                val albumsResponse = (albums as Response.Success).data
+                val artistsResponse = (artists as Response.Success).data
                 Log.d("homeMain", "Success.")
-                SumUpHomeScreen(navController = navController, albums = response, artists = artists)
+                SumUpHomeScreen(navController = navController, albums = albumsResponse, artists = artistsResponse)
             }
 
             is Response.Error -> {
@@ -111,10 +114,11 @@ fun SumUpHomeScreen(navController : NavController, albums: List<AlbumsModel>, ar
 
         GreetingSection()
         //ChipSection(chip = listOf(" All ", "Music", "Podcasts"))
+
         HomePlaylistGrid(navController, albums)
-        HomeAlbums(albums = albums)
+        HomeAlbums(album = albums, navController)
         HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
-        HomeArtists(artists = artists)
+        HomeArtists(artists = artists, navController)
         ImageCard(navController, albums)
     }
 }
@@ -188,7 +192,12 @@ fun GreetingSection(name : String = "User") {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
-    val chunkedAlbums = albums.chunked(2)
+    val gridAlbums = mutableListOf<AlbumsModel>()
+    for (i in 0..7){
+        gridAlbums.add(albums[i])
+    }
+
+    val chunkedAlbums = gridAlbums.chunked(2).shuffled()
     Log.d("giveme", chunkedAlbums.toString())
     Column(
         modifier = Modifier
@@ -214,7 +223,7 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
                             .clickable {
                                 val albumName = chunkedAlbums[it][album].name
                                 Log.d("check", albumName.toString())
-                                navController.navigate("album/$albumName")
+                                navController.navigate("${Routes.Album.route}/$albumName")
                             }
                     ) {
                         GlideImage(modifier = Modifier
@@ -244,8 +253,10 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeAlbums(
-    albums : List<AlbumsModel>
+    album : List<AlbumsModel>,
+    navController: NavController
 ) {
+    val reversedAlbum = album.reversed().dropLast(1).shuffled()
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
         text = "Albums",
@@ -253,11 +264,14 @@ fun HomeAlbums(
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold)
         LazyRow(modifier = Modifier.padding(6.dp)){
-            items(albums.size){album ->
+            items(reversedAlbum.size){ album ->
                 Box(modifier = Modifier
                     .padding(10.dp)
                     .width(150.dp)
                     .height(195.dp)
+                    .clickable {
+                        navController.navigate("${Routes.Album.route}/${reversedAlbum[album].name}")
+                    }
             ){
                 Column(
                     horizontalAlignment = Alignment.Start,
@@ -266,20 +280,20 @@ fun HomeAlbums(
                     GlideImage(modifier = Modifier
                         .size(150.dp),
                         contentScale = ContentScale.Crop,
-                        model = albums[album].coverUri,
+                        model = reversedAlbum[album].coverUri,
                         loading = placeholder(R.drawable.placeholder),
                         failure = placeholder(R.drawable.placeholder),
                         contentDescription = "Albums")
                     Text(
                         fontSize = 13.sp,
-                        text = albums[album].name,
+                        text = reversedAlbum[album].name,
                         textAlign = TextAlign.Center,
                         color = Color.White,
                         fontWeight = FontWeight.Bold)
                     Text(
                         fontSize = 12.sp,
                         textAlign = TextAlign.Center,
-                        text = albums[album].artists,
+                        text = reversedAlbum[album].artists,
                         color = Color.LightGray)
                 }
 
@@ -331,7 +345,8 @@ fun HomeRecentlyPlayed(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeArtists(
-    artists : List<ArtistsModel>
+    artists : List<ArtistsModel>,
+    navController: NavController
 ) {
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
@@ -345,6 +360,10 @@ fun HomeArtists(
                 .padding(10.dp)
                 .width(150.dp)
                 .height(200.dp)
+                .clickable {
+                    Log.d("check", artists[artist].name)
+                    navController.navigate("${Routes.Artist.route}/${artists[artist].name}")
+                }
             ){
                 Column(horizontalAlignment = Alignment.Start) {
 
@@ -397,6 +416,9 @@ fun ImageCard(
                     .padding(15.dp)
                     .fillMaxWidth()
                     .height(380.dp)
+                    .clickable {
+                       navController.navigate("${Routes.Album.route}/${albums[album].name}")
+                    }
             ) {
                 Box(
                     modifier = Modifier
