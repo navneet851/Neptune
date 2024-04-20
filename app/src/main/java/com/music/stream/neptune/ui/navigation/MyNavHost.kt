@@ -30,7 +30,7 @@ fun MyNavHost(navHostController: NavHostController, bottomBarState : MutableStat
             LaunchedEffect(Unit) {
                 bottomBarState.value = true
             }
-            SearchScreen()
+            SearchScreen(navHostController)
         }
         composable(Routes.Library.route) {
             LaunchedEffect(Unit) {

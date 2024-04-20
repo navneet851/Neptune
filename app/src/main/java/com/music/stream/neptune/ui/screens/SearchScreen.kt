@@ -1,9 +1,9 @@
 package com.music.stream.neptune.ui.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,10 +22,12 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,29 +36,104 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
+import com.music.stream.neptune.data.api.Response
+import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.viewmodel.SearchViewModel
+
 
 @RequiresApi(Build.VERSION_CODES.S)
-@OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
-fun SearchScreen() {
-    LazyColumn(modifier = Modifier.fillMaxSize().statusBarsPadding()){
+fun SearchScreen(navController: NavController) {
+    val searchViewModel : SearchViewModel = hiltViewModel()
+    val songs by searchViewModel.songs.collectAsState()
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(AppBackground.toArgb()))
+    ) {
+        when(songs){
+            is Response.Loading -> {
+                Log.d("homeMain", "loading-search-songs..")
+                Loader()
+            }
+
+            is Response.Success -> {
+                val songsResponse = (songs as Response.Success).data
+                Log.d("homeMain", "Success-search-songs. ${songsResponse.toString()}")
+                SumUpSearchScreen(navController = navController, songsResponse.shuffled())
+            }
+
+            is Response.Error -> {
+                Log.d("homeMain", "Error!!-search")
+            }
+        }
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.S)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
+@Composable
+fun SumUpSearchScreen(
+    navController: NavController,
+    songs : List<SongsModel>
+) {
+
+
+
+    var text by remember {
+        mutableStateOf("")
+    }
+    var searchedList = listOf<SongsModel>()
+    var times = 0
+
+    when(text){
+        "" -> {
+            searchedList = songs
+            times = searchedList.size
+        }
+        else -> {
+            searchedList = songs.filter {
+                it.title.lowercase().contains(text.lowercase())
+            }
+            times = searchedList.size
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(AppBackground.toArgb()))
+            .statusBarsPadding()
+
+    ){
         item{
             SearchTopBar()
         }
         stickyHeader {
-            SearchStickyBar()
+            SearchStickyBar(text) {
+                text = it
+            }
         }
-        items(20){
+
+        items(times){ song ->
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -67,15 +144,22 @@ fun SearchScreen() {
                 Row(horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .width(200.dp)) {
-                    Image(modifier = Modifier
-                        .size(60.dp),
-                        painter = painterResource(id = R.drawable.album),
+                        .width(280.dp)) {
+                    GlideImage(
+                        modifier = Modifier
+                            .padding(0.dp, 0.dp, 10.dp, 0.dp)
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                        ,
+                        model = searchedList[song].coverUri,
                         contentScale = ContentScale.Crop,
-                        contentDescription = "")
-                    Column(modifier = Modifier.padding(start = 10.dp)) {
-                        Text(text = "Album name", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold )
-                        Text(text = "Song singer Name", color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        failure = placeholder(R.drawable.placeholder),
+                        loading = placeholder(R.drawable.placeholder),
+                        contentDescription = ""
+                    )
+                    Column {
+                        Text(text = searchedList[song].title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium )
+                        Text(text = searchedList[song].singer, color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
                 }
 
@@ -102,10 +186,8 @@ fun SearchTopBar() {
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun SearchStickyBar() {
-    var text by remember {
-        mutableStateOf("")
-    }
+fun SearchStickyBar(text: String, onTextChange: (String) -> Unit) {
+
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -133,9 +215,7 @@ fun SearchStickyBar() {
                 unfocusedIndicatorColor = Color.Transparent
             ),
             singleLine = true,
-            onValueChange = {
-                text = it
-            },
+            onValueChange = onTextChange,
             placeholder = {
                 Text(
                      textAlign = TextAlign.Center,

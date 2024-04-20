@@ -75,19 +75,19 @@ fun AlbumScreen(navController: NavController, albumName: String) {
     ) {
         when(albums){
             is Response.Loading -> {
-                Log.d("homeMain", "loading...")
+                Log.d("homeMain", "loading..-albums")
                 Loader()
             }
 
             is Response.Success -> {
                 val albumsResponse = (albums as Response.Success).data
                 val songsResponse = (songs as Response.Success).data
-                Log.d("homeMain", "Success.")
+                Log.d("homeMain", "Success..-albums")
                 SumUpAlbumScreen(navController = navController, albumsResponse, songsResponse, albumName)
             }
 
             is Response.Error -> {
-                Log.d("homeMain", "Error!!")
+                Log.d("homeMain", "Error!!-albums")
             }
         }
     }

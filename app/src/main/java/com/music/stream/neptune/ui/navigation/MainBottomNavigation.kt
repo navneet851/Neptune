@@ -92,7 +92,7 @@ fun MainBottomNavigation(navController: NavController, bottomBarState: MutableSt
                                     Text(color = Color.White, text = item.label, fontSize = 11.sp)
                                 } else {
                                     Text(
-                                        color = Color.LightGray,
+                                        color = Color.Gray,
                                         text = item.label,
                                         fontSize = 11.sp
                                     )
@@ -111,8 +111,8 @@ fun MainBottomNavigation(navController: NavController, bottomBarState: MutableSt
                             interactionSource = NoRippleInteractionSource(),
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = Color.White,
-                                unselectedIconColor = Color.LightGray,
-                                indicatorColor = Color.Unspecified
+                                unselectedIconColor = Color.Gray,
+                                indicatorColor = Color.Transparent
                             )
                         )
 

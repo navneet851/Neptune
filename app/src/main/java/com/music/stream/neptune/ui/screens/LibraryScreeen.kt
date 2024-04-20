@@ -1,6 +1,7 @@
 package com.music.stream.neptune.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,10 +19,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.music.stream.neptune.R
+import com.music.stream.neptune.ui.theme.AppBackground
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +44,9 @@ fun LibraryScreen() {
                     title = {
                     Text(text = "Your Library", fontWeight = FontWeight.Bold, color = Color.White)
                 },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(AppBackground.toArgb()),
+                        ),
                     navigationIcon = {
                         IconButton(onClick = { /* do something */ }) {
                             Icon(
@@ -64,6 +71,7 @@ fun LibraryScreen() {
         Column(modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(it)
+            .background(Color(AppBackground.toArgb()))
         ) {
                 repeat(10){
 

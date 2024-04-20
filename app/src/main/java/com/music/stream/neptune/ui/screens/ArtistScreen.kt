@@ -89,7 +89,7 @@ fun ArtistScreen(navController: NavController, artistName: String) {
             }
 
             is Response.Error -> {
-                Log.d("homeMain", "Error!!")
+                Log.d("homeMain", "Error!!-artists")
             }
         }
     }
@@ -266,6 +266,8 @@ fun SumUpArtistScreen(
                             modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp).size(50.dp),
                             model = artistSongs[song].coverUri,
                             contentScale = ContentScale.Crop,
+                            failure = placeholder(R.drawable.placeholder),
+                            loading = placeholder(R.drawable.placeholder),
                             contentDescription = ""
                         )
                         Column {

@@ -197,7 +197,7 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
         gridAlbums.add(albums[i])
     }
 
-    val chunkedAlbums = gridAlbums.chunked(2).shuffled()
+    val chunkedAlbums = gridAlbums.chunked(2)
     Log.d("giveme", chunkedAlbums.toString())
     Column(
         modifier = Modifier
@@ -396,7 +396,7 @@ fun ImageCard(
     modifier: Modifier = Modifier
 ) {
 
-    val albums = allAlbums.takeLast(3)
+    val albums = allAlbums.drop(1).shuffled().takeLast(3)
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
         text = "Discover",
@@ -439,9 +439,9 @@ fun ImageCard(
                                 Brush.verticalGradient(
                                     colors = listOf(
                                         Color.Transparent,
-                                        Color.Black
+                                        Color(AppBackground.toArgb())
                                     ),
-                                    startY = 250f
+                                    startY = 150f
                                 )
                             )
                     )
