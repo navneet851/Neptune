@@ -1,6 +1,6 @@
 package com.music.stream.neptune.ui.screens
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +33,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PlayerScreen(navController: NavController) {
+    val playerViewModel : PlayerViewModel = hiltViewModel()
+    val songTitle = playerViewModel.currentSongTitle.value
+    val songSinger = playerViewModel.currentSongSinger.value
+    val songCoverUri = playerViewModel.currentSongCoverUri.value
+    val songPlayingState = playerViewModel.currentSongPlayingState.value
+
+    Log.d("checkplayer", songTitle)
+
+    playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
+
+
     var sliderPosition = remember{
         mutableStateOf(0f)
     }
@@ -51,16 +67,17 @@ fun PlayerScreen(navController: NavController) {
         ) {
             PlayerTopBar(navController)
             Spacer(modifier = Modifier.padding(16.dp))
-            Image(
+            GlideImage(
                 modifier = Modifier
                     .size(370.dp)
                     .padding(20.dp)
                     .clip(RoundedCornerShape(10.dp))
-                ,painter = painterResource(id = R.drawable.album),
+                ,
+                model = songCoverUri,
                 contentScale = ContentScale.Crop,
                 contentDescription = "")
             Spacer(modifier = Modifier.padding(30.dp))
-            PlayerInfo()
+            PlayerInfo(songTitle, songSinger)
             Slider(
                 modifier = Modifier
                     .height(20.dp)
@@ -104,7 +121,7 @@ fun PlayerTopBar(navController: NavController) {
 }
 
 @Composable
-fun PlayerInfo() {
+fun PlayerInfo(songTitle: String, songSinger: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -126,13 +143,13 @@ fun PlayerInfo() {
 //                        )
             Column {
                 Text(
-                    text = "Kahani suno",
+                    text = songTitle,
                     color = Color.White,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "singer",
+                    text = songSinger,
                     color = Color.LightGray,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium

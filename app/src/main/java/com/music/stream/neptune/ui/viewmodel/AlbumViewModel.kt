@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.di.CurrentSongState
 import com.music.stream.neptune.ui.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AlbumViewModel @Inject constructor(private val repository: AppRepository) :  ViewModel() {
+class AlbumViewModel @Inject constructor(private val repository: AppRepository, private val currentSongState: CurrentSongState) :  ViewModel() {
 
 
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
@@ -24,6 +25,9 @@ class AlbumViewModel @Inject constructor(private val repository: AppRepository) 
     private val _albums : MutableStateFlow<Response<List<AlbumsModel>>> = MutableStateFlow(Response.Loading())
     val albums : StateFlow<Response<List<AlbumsModel>>> = _albums
 
+    fun updateSongState(coverUri: String, name: String, singer: String, playingState: Boolean) {
+        currentSongState.updateSongState(coverUri, name, singer, playingState)
+    }
 
     init {
         fetchAlbums()

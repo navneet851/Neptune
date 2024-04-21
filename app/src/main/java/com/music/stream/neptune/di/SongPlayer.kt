@@ -17,7 +17,9 @@ object songPlayer {
         player!!.playWhenReady = true
 
     }
-
+    fun play(){
+        player!!.play()
+    }
     fun pause() {
         player!!.playWhenReady = false
     }

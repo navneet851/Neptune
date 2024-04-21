@@ -1,7 +1,9 @@
 package com.music.stream.neptune.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,16 +25,19 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.di.songPlayer
+import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.theme.GridBackground
+import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 
 @Composable
 fun Loader() {
@@ -50,9 +56,14 @@ fun Loader() {
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
-@Preview
 @Composable
-fun MiniPlayer() {
+fun MiniPlayer(navController: NavController) {
+    val miniPlayerViewModel : PlayerViewModel = hiltViewModel()
+    val songTitle = miniPlayerViewModel.currentSongTitle.value
+    val songSinger = miniPlayerViewModel.currentSongSinger.value
+    val songCoverUri = miniPlayerViewModel.currentSongCoverUri.value
+    val songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
+    Log.d("checkplayermini", songTitle)
     Row(horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -61,41 +72,60 @@ fun MiniPlayer() {
             .clip(RoundedCornerShape(8.dp))
             .background(Color(GridBackground.toArgb()))
             .padding(10.dp, 5.dp)
-            .clickable {
-
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                navController.navigate(Routes.Player.route)
             }
     ){
 
         Row(horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .width(280.dp)) {
+                .width(280.dp)
+        ) {
             GlideImage(
                 modifier = Modifier
                     .padding(0.dp, 0.dp, 10.dp, 0.dp)
                     .size(45.dp)
                     .clip(RoundedCornerShape(6.dp))
                 ,
-                model = R.drawable.album,
+                model = songCoverUri,
                 contentScale = ContentScale.Crop,
                 failure = placeholder(R.drawable.placeholder),
                 loading = placeholder(R.drawable.placeholder),
                 contentDescription = ""
             )
             Column {
-                Text(text = "song", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium )
-                Text(text = "singer", color = Color.Gray, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                Text(text = songTitle, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium )
+                Text(text = songSinger, color = Color.Gray, fontSize = 11.sp, fontWeight = FontWeight.Medium)
             }
         }
 
         Icon(
-            painter = painterResource(id = R.drawable.ic_playing),
+            painter = if (songPlayingState)
+                painterResource(id = R.drawable.ic_playing)
+            else
+                painterResource(id = R.drawable.ic_paused)
+                ,
             contentDescription = "",
             tint = Color.White,
             modifier = Modifier
-                .size(28.dp)
-                .clickable {
-                    songPlayer.pause()
+                //.size(28.dp)
+                .padding(8.dp, 0.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (songPlayingState){
+                        songPlayer.pause()
+                        miniPlayerViewModel.updateSongState(songCoverUri, songTitle, songSinger, false)
+                    }
+                    else{
+                        songPlayer.play()
+                        miniPlayerViewModel.updateSongState(songCoverUri, songTitle, songSinger, true)
+                    }
                 }
             )
     }

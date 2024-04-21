@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,9 @@ import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
+import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
 
@@ -91,7 +94,7 @@ fun AlbumScreen(navController: NavController, albumName: String) {
                 val albumsResponse = (albums as Response.Success).data
                 val songsResponse = (songs as Response.Success).data
                 Log.d("homeMain", "Success..-albums")
-                SumUpAlbumScreen(navController = navController, albumsResponse, songsResponse, albumName, context)
+                SumUpAlbumScreen(navController = navController,albumViewModel, albumsResponse, songsResponse, albumName, context)
             }
 
             is Response.Error -> {
@@ -106,6 +109,7 @@ fun AlbumScreen(navController: NavController, albumName: String) {
 @Composable
 fun SumUpAlbumScreen(
     navController: NavController,
+    albumViewModel: AlbumViewModel,
     albums: List<AlbumsModel>,
     songs: List<SongsModel>,
     albumName: String,
@@ -269,6 +273,14 @@ fun SumUpAlbumScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp, 8.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            songPlayer.playSong(albumSongs[song].url, context)
+                            navController.navigate("${Routes.Player.route}")
+                            albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true)
+                        }
                 ) {
 
                     Row(

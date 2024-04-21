@@ -53,6 +53,10 @@ fun MyNavHost(
         }
 
         composable("${Routes.Album.route}/{uString}") { navBackStackEntry ->
+            LaunchedEffect(Unit) {
+                bottomBarState.value = true
+            }
+
             /* Extracting the id from the route */
             val uId = navBackStackEntry.arguments?.getString("uString")
             /* We check if it's not null */
@@ -62,6 +66,10 @@ fun MyNavHost(
         }
 
         composable("${Routes.Artist.route}/{aString}") { navBackStackEntry ->
+            LaunchedEffect(Unit) {
+                bottomBarState.value = true
+            }
+
             /* Extracting the id from the route */
             val aId = navBackStackEntry.arguments?.getString("aString")
             /* We check if it's not null */

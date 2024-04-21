@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -117,7 +119,7 @@ fun SumUpHomeScreen(navController : NavController, albums: List<AlbumsModel>, ar
 
         HomePlaylistGrid(navController, albums)
         HomeAlbums(album = albums, navController)
-        HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
+        //HomeRecentlyPlayed(navController, albums = listOf("karan aujla", "diljit", "fudfu", "frref", "frrf"))
         HomeArtists(artists = artists, navController)
         ImageCard(navController, albums)
     }
@@ -220,7 +222,10 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
                             .clip(RoundedCornerShape(3.dp))
                             .background(Color(GridBackground.toArgb()))
                             .width(180.dp)
-                            .clickable {
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
                                 val albumName = chunkedAlbums[it][album].name
                                 Log.d("check", albumName.toString())
                                 navController.navigate("${Routes.Album.route}/$albumName")
@@ -269,7 +274,10 @@ fun HomeAlbums(
                     .padding(10.dp)
                     .width(150.dp)
                     .height(195.dp)
-                    .clickable {
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
                         navController.navigate("${Routes.Album.route}/${reversedAlbum[album].name}")
                     }
             ){
@@ -319,7 +327,10 @@ fun HomeRecentlyPlayed(
                 .padding(10.dp)
                 .width(130.dp)
                 .height(140.dp)
-                .clickable {
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
                     navController.navigate(Routes.Player.route)
                 }
             ){
@@ -360,7 +371,10 @@ fun HomeArtists(
                 .padding(10.dp)
                 .width(150.dp)
                 .height(200.dp)
-                .clickable {
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
                     Log.d("check", artists[artist].name)
                     navController.navigate("${Routes.Artist.route}/${artists[artist].name}")
                 }
@@ -408,7 +422,7 @@ fun ImageCard(
     ) {
         repeat(albums.size) { album ->
             Card(
-                shape = RoundedCornerShape(25.dp),
+                shape = RoundedCornerShape(15.dp),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 5.dp
                 ),
@@ -416,7 +430,10 @@ fun ImageCard(
                     .padding(15.dp)
                     .fillMaxWidth()
                     .height(380.dp)
-                    .clickable {
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
                        navController.navigate("${Routes.Album.route}/${albums[album].name}")
                     }
             ) {

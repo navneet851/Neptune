@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -83,7 +84,7 @@ fun SearchScreen(navController: NavController) {
             is Response.Success -> {
                 val songsResponse = (songs as Response.Success).data
                 Log.d("homeMain", "Success-search-songs. ${songsResponse.toString()}")
-                SumUpSearchScreen(navController = navController, songsResponse.shuffled())
+                SumUpSearchScreen(navController = navController, songsResponse.shuffled(), searchViewModel)
             }
 
             is Response.Error -> {
@@ -100,6 +101,7 @@ fun SearchScreen(navController: NavController) {
 fun SumUpSearchScreen(
     navController: NavController,
     songs: List<SongsModel>,
+    searchViewModel: SearchViewModel,
 ) {
     val context = LocalContext.current
 
@@ -108,6 +110,7 @@ fun SumUpSearchScreen(
     }
     var searchedList = listOf<SongsModel>()
     var times = 0
+
 
     when(text){
         "" -> {
@@ -144,9 +147,13 @@ fun SumUpSearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp)
-                    .clickable {
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
                         songPlayer.playSong(searchedList[song].url, context)
                         navController.navigate("${Routes.Player.route}")
+                        searchViewModel.updateSongState(searchedList[song].coverUri, searchedList[song].title, searchedList[song].singer, true)
                     }
                 ){
 

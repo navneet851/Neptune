@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,9 @@ import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
+import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
 
@@ -90,7 +93,7 @@ fun ArtistScreen(navController: NavController, artistName: String) {
                 val songsResponse = (songs as Response.Success).data
                 val artistsResponse = (artists as Response.Success).data
                 Log.d("homeMain", "Success-artists-songs. ${artistsResponse.toString()}")
-                SumUpArtistScreen(navController = navController, songsResponse.shuffled(), artistsResponse, artistName)
+                SumUpArtistScreen(navController = navController, artistViewModel, songsResponse.shuffled(), artistsResponse, artistName)
             }
 
             is Response.Error -> {
@@ -105,6 +108,7 @@ fun ArtistScreen(navController: NavController, artistName: String) {
 @Composable
 fun SumUpArtistScreen(
     navController: NavController,
+    artistViewModel: ArtistViewModel,
     songs: List<SongsModel>,
     artists: List<ArtistsModel>,
     artistName: String
@@ -270,6 +274,14 @@ fun SumUpArtistScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp, 8.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            songPlayer.playSong(artistSongs[song].url, context)
+                            navController.navigate("${Routes.Player.route}")
+                            artistViewModel.updateSongState(artistSongs[song].coverUri, artistSongs[song].title, artistSongs[song].singer, true)
+                        }
                 ) {
 
                     Row(

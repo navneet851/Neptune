@@ -43,6 +43,7 @@ class NoRippleInteractionSource : MutableInteractionSource {
 
 @Composable
 fun MainBottomNavigation(navController: NavController, bottomBarState: MutableState<Boolean>) {
+
     val navItems = listOf(
         Routes.Home,
         Routes.Search,
@@ -71,7 +72,7 @@ fun MainBottomNavigation(navController: NavController, bottomBarState: MutableSt
 
                 Column {
 
-                    MiniPlayer()
+                    MiniPlayer(navController)
 
                     NavigationBar(
                         modifier = Modifier
