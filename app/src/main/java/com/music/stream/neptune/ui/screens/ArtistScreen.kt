@@ -32,6 +32,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,6 +57,7 @@ import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
@@ -111,6 +116,16 @@ fun SumUpArtistScreen(
     val artist = artists.filter{
         artistName == it.name
     }
+
+    val context = LocalContext.current
+
+    var dominentColor by remember {
+        mutableStateOf(Color(AppBackground.toArgb()))
+    }
+    Palette().extractLightVibrantColorFromImageUrl(context = context, artist[0].coverUri){ color ->
+        dominentColor = color
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -148,7 +163,7 @@ fun SumUpArtistScreen(
                     .height(460.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color.White, Color(AppBackground.toArgb())),
+                            colors = listOf(dominentColor, Color(AppBackground.toArgb())),
                             startY = -1000f,
 
                             ),

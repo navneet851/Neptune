@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -24,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.music.stream.neptune.R
 import com.music.stream.neptune.ui.navigation.Routes
+import com.music.stream.neptune.ui.theme.AppBackground
 
 @Composable
 fun PlayerScreen(navController: NavController) {
@@ -39,12 +44,16 @@ fun PlayerScreen(navController: NavController) {
         mutableStateOf(0f)
     }
         Column(modifier = Modifier
-            .fillMaxSize()) {
+            .fillMaxSize()
+            .background(Color(AppBackground.toArgb()))
+            .statusBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             PlayerTopBar(navController)
             Spacer(modifier = Modifier.padding(16.dp))
             Image(
                 modifier = Modifier
-                    .height(385.dp)
+                    .size(370.dp)
                     .padding(20.dp)
                     .clip(RoundedCornerShape(10.dp))
                 ,painter = painterResource(id = R.drawable.album),
@@ -80,37 +89,63 @@ fun PlayerTopBar(navController: NavController) {
             painter = painterResource(id = R.drawable.ic_down),
             tint = Color.White,
             contentDescription = "")
-        Text(text = "PLAYING SONG", color = Color.White)
-        Icon(painter = painterResource(id = R.drawable.ic_dots), tint = Color.White, contentDescription = "")
+
+        Text(
+            text = "PLAYING SONG",
+            color = Color.White,
+            fontSize = 11.sp
+        )
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            tint = Color.White,
+            modifier = Modifier.size(23.dp),
+            contentDescription = "")
     }
 }
 
 @Composable
 fun PlayerInfo() {
-    Row(verticalAlignment = Alignment.CenterVertically,
+    Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)){
-        Column {
-            Text(text = "Album Name", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(text = "singer name", color = Color.White, fontSize = 15.sp)
+            .padding(25.dp, 10.dp)
+    ) {
+
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.width(200.dp)
+        ) {
+//                        GlideImage(
+//                            modifier = Modifier.size(60.dp),
+//                            model = albumSongs[song].coverUri,
+//                            contentScale = ContentScale.Crop,
+//                            contentDescription = ""
+//                        )
+            Column {
+                Text(
+                    text = "Kahani suno",
+                    color = Color.White,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "singer",
+                    color = Color.LightGray,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
-        Row(horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.width(90.dp)) {
-            Icon(
-                modifier = Modifier
-                    .size(30.dp),
-                painter = painterResource(id = R.drawable.ic_minus),
-                tint = Color.White,
-                contentDescription = "")
-            Icon(
-                modifier = Modifier
-                    .size(30.dp),
-                painter = painterResource(id = R.drawable.ic_add),
-                tint = Color.White,
-                contentDescription = "")
-        }
+
+        Icon(
+            modifier = Modifier
+                .size(26.dp),
+            painter = painterResource(id = R.drawable.ic_add),
+            tint = Color.White,
+            contentDescription = "")
     }
 }
 
@@ -123,13 +158,13 @@ fun PlayerEndInfo() {
             .padding(20.dp)){
         Icon(
             modifier = Modifier
-                .size(25.dp),
+                .size(22.dp),
             painter = painterResource(id = R.drawable.ic_devices),
             tint = Color.White,
             contentDescription = "")
         Icon(
             modifier = Modifier
-                .size(18.dp),
+                .size(16.dp),
             painter = painterResource(id = R.drawable.ic_share),
             tint = Color.White,
             contentDescription = "")

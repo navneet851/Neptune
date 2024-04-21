@@ -1,6 +1,7 @@
 package com.music.stream.neptune.ui.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,6 +58,7 @@ import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
@@ -65,6 +71,8 @@ fun AlbumScreen(navController: NavController, albumName: String) {
     val albumViewModel : AlbumViewModel = hiltViewModel()
     val songs by albumViewModel.songs.collectAsState()
     val albums by albumViewModel.albums.collectAsState()
+
+    val context = LocalContext.current
 
     Log.d("check", albumName.toString())
 
@@ -83,7 +91,7 @@ fun AlbumScreen(navController: NavController, albumName: String) {
                 val albumsResponse = (albums as Response.Success).data
                 val songsResponse = (songs as Response.Success).data
                 Log.d("homeMain", "Success..-albums")
-                SumUpAlbumScreen(navController = navController, albumsResponse, songsResponse, albumName)
+                SumUpAlbumScreen(navController = navController, albumsResponse, songsResponse, albumName, context)
             }
 
             is Response.Error -> {
@@ -100,7 +108,8 @@ fun SumUpAlbumScreen(
     navController: NavController,
     albums: List<AlbumsModel>,
     songs: List<SongsModel>,
-    albumName: String
+    albumName: String,
+    context: Context
 ) {
 
     val albumSongs = songs.filter {
@@ -109,6 +118,13 @@ fun SumUpAlbumScreen(
     val album = albums.filter{
         albumName == it.name
     }
+    var dominentColor by remember {
+        mutableStateOf(Color(AppBackground.toArgb()))
+    }
+    Palette().extractLightVibrantColorFromImageUrl(context = context, album[0].coverUri){ color ->
+        dominentColor = color
+    }
+    Log.d("color", dominentColor.toString())
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -146,8 +162,8 @@ fun SumUpAlbumScreen(
                     .height(460.dp)
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color.White, Color(AppBackground.toArgb())),
-                            startY = -1000f,
+                            colors = listOf(dominentColor, Color(AppBackground.toArgb())),
+                            startY = -100f,
 
                             ),
 
@@ -163,8 +179,8 @@ fun SumUpAlbumScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     GlideImage(
-                        modifier = Modifier.size(225.dp),
-                        model = albumSongs[0].coverUri,
+                        modifier = Modifier.size(230.dp),
+                        model = album[0].coverUri,
                         failure = placeholder(R.drawable.placeholder),
                         //loading = placeholder(R.drawable.album),
                         //contentScale = ContentScale.Crop,
@@ -211,7 +227,7 @@ fun SumUpAlbumScreen(
                                 .clip(RoundedCornerShape(4.dp))
                                 .border(2.dp, Color.Gray, RectangleShape)
                                 .padding(5.dp),
-                            model = albumSongs[0].coverUri,
+                            model = album[0].coverUri,
                             failure = placeholder(R.drawable.placeholder),
                             //loading = placeholder(R.drawable.album),
                             contentScale = ContentScale.Crop,

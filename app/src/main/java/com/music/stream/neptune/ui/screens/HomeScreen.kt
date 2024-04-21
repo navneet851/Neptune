@@ -256,7 +256,7 @@ fun HomeAlbums(
     album : List<AlbumsModel>,
     navController: NavController
 ) {
-    val reversedAlbum = album.reversed().dropLast(1).shuffled()
+    val reversedAlbum = album.reversed().dropLast(1)
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
         text = "Albums",

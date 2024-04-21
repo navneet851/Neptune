@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.music.stream.neptune.ui.navigation.MainBottomNavigation
@@ -16,7 +15,6 @@ import com.music.stream.neptune.ui.navigation.MyNavHost
 
 
 @RequiresApi(Build.VERSION_CODES.S)
-@Preview()
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App() {

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.music.stream.neptune.ui.components.MiniPlayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -67,57 +69,67 @@ fun MainBottomNavigation(navController: NavController, bottomBarState: MutableSt
                     )
             ) {
 
+                Column {
 
-                NavigationBar(
-                    modifier = Modifier
-                        .padding(30.dp, 0.dp)
-                        .fillMaxWidth(),
-                    containerColor = Color.Transparent
-                ) {
-                    val navStack by navController.currentBackStackEntryAsState()
-                    val currentRoute = navStack?.destination?.route
+                    MiniPlayer()
 
-                    navItems.forEach { item ->
-                        NavigationBarItem(
-                            selected = currentRoute == item.route,
-                            icon = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = item.icon
-                                    ), contentDescription = "home"
-                                )
-                            },
-                            label = {
-                                if (currentRoute == item.route) {
-                                    Text(color = Color.White, text = item.label, fontSize = 11.sp)
-                                } else {
-                                    Text(
-                                        color = Color.Gray,
-                                        text = item.label,
-                                        fontSize = 11.sp
+                    NavigationBar(
+                        modifier = Modifier
+                            .padding(30.dp, 0.dp)
+                            .fillMaxWidth(),
+                        containerColor = Color.Transparent
+                    ) {
+                        val navStack by navController.currentBackStackEntryAsState()
+                        val currentRoute = navStack?.destination?.route
+
+                        navItems.forEach { item ->
+                            NavigationBarItem(
+                                selected = currentRoute == item.route,
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = item.icon
+                                        ), contentDescription = "home"
                                     )
-                                }
-                            },
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    navController.graph.startDestinationRoute?.let {
-                                        popUpTo(item.route)
-                                        launchSingleTop = true
-                                        restoreState = true
+                                },
+                                label = {
+                                    if (currentRoute == item.route) {
+                                        Text(color = Color.White, text = item.label, fontSize = 11.sp)
+                                    } else {
+                                        Text(
+                                            color = Color.Gray,
+                                            text = item.label,
+                                            fontSize = 11.sp
+                                        )
                                     }
-                                }
-                            },
-                            alwaysShowLabel = true,
-                            interactionSource = NoRippleInteractionSource(),
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color.White,
-                                unselectedIconColor = Color.Gray,
-                                indicatorColor = Color.Transparent
+                                },
+                                onClick = {
+                                    navController.navigate(item.route) {
+                                        navController.graph.startDestinationRoute?.let {
+                                            popUpTo(item.route)
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
+                                },
+                                alwaysShowLabel = true,
+                                interactionSource = NoRippleInteractionSource(),
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = Color.White,
+                                    unselectedIconColor = Color.Gray,
+                                    indicatorColor = Color.Transparent
+                                )
                             )
-                        )
 
+                        }
                     }
+
+
+
                 }
+
+
+
             }
         }
     )

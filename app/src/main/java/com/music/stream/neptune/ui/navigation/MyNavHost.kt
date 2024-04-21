@@ -17,7 +17,14 @@ import com.music.stream.neptune.ui.screens.SearchScreen
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun MyNavHost(navHostController: NavHostController, bottomBarState : MutableState<Boolean>) {
+fun MyNavHost(
+    navHostController: NavHostController,
+    bottomBarState: MutableState<Boolean>
+) {
+
+//    val context = LocalContext.current
+//    var player : ExoPlayer? = null
+//    player = ExoPlayer.Builder(context).build()
 
     NavHost(navController = navHostController, startDestination = Routes.Home.route){
         composable(Routes.Home.route){

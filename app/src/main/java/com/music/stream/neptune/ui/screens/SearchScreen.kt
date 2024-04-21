@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +54,9 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.SearchViewModel
 
@@ -62,6 +66,8 @@ import com.music.stream.neptune.ui.viewmodel.SearchViewModel
 fun SearchScreen(navController: NavController) {
     val searchViewModel : SearchViewModel = hiltViewModel()
     val songs by searchViewModel.songs.collectAsState()
+
+
 
     Surface(
         modifier = Modifier
@@ -93,10 +99,9 @@ fun SearchScreen(navController: NavController) {
 @Composable
 fun SumUpSearchScreen(
     navController: NavController,
-    songs : List<SongsModel>
+    songs: List<SongsModel>,
 ) {
-
-
+    val context = LocalContext.current
 
     var text by remember {
         mutableStateOf("")
@@ -139,6 +144,10 @@ fun SumUpSearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 8.dp)
+                    .clickable {
+                        songPlayer.playSong(searchedList[song].url, context)
+                        navController.navigate("${Routes.Player.route}")
+                    }
                 ){
 
                 Row(horizontalArrangement = Arrangement.Start,

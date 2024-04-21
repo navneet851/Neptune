@@ -87,9 +87,17 @@ dependencies {
 
     //glide
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 
     //splashScreen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    //palette
+    implementation("androidx.palette:palette-ktx:1.0.0")
+
+    //exoplayer
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
 }
 kapt {
     correctErrorTypes = true

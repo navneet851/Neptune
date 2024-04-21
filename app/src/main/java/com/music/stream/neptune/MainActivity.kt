@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
 
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
 
 //        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         setContent {
+
             NeptuneTheme {
                 // A surface container using the 'background' color from the theme
                     App()
