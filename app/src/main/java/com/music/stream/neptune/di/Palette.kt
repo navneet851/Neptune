@@ -27,28 +27,28 @@ class Palette {
 //            })
 //    }
 
-//    fun extractDominantColorFromImageUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
-//        Glide.with(context)
-//            .asBitmap()
-//            .load(imageUrl)
-//            .into(object : CustomTarget<Bitmap>() {
-//                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-//                    Palette.from(resource).generate { palette ->
-//                        val dominantColor = palette?.dominantSwatch?.rgb
-//                        dominantColor?.let {
-//                            // Convert RGB color integer to ARGB color integer with full opacity
-//                            val argbColor = Color(it or (0xFF shl 24))
-//                            onColorExtracted(argbColor)
-//                        }
-//                    }
-//                }
-//
-//                override fun onLoadCleared(placeholder: Drawable?) {
-//                    // Handle cleanup here if necessary
-//                }
-//            })
-//    }
-    fun extractLightVibrantColorFromImageUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
+    fun extractDominantColorFromImageUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
+        Glide.with(context)
+            .asBitmap()
+            .load(imageUrl)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    Palette.from(resource).generate { palette ->
+                        val dominantColor = palette?.darkVibrantSwatch?.rgb
+                        dominantColor?.let {
+                            // Convert RGB color integer to ARGB color integer with full opacity
+                            val argbColor = Color(it or (0xFF shl 24))
+                            onColorExtracted(argbColor)
+                        }
+                    }
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // Handle cleanup here if necessary
+                }
+            })
+    }
+    fun extractMutedColorFromCoverUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(imageUrl)

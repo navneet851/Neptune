@@ -16,13 +16,17 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,10 +37,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
+import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
-import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 
 @Composable
@@ -63,14 +67,25 @@ fun MiniPlayer(navController: NavController) {
     val songSinger = miniPlayerViewModel.currentSongSinger.value
     val songCoverUri = miniPlayerViewModel.currentSongCoverUri.value
     val songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
+
+    val context = LocalContext.current
+
+    var darkVibrantColor by remember {
+        mutableStateOf(Color(AppBackground.toArgb()))
+    }
+    Palette().extractDominantColorFromImageUrl(context = context, songCoverUri){ color ->
+        darkVibrantColor = color
+    }
     Log.d("checkplayermini", songTitle)
+
+
     Row(horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(14.dp, 10.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(GridBackground.toArgb()))
+            .background(darkVibrantColor)
             .padding(10.dp, 5.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -99,7 +114,7 @@ fun MiniPlayer(navController: NavController) {
             )
             Column {
                 Text(text = songTitle, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium )
-                Text(text = songSinger, color = Color.Gray, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                Text(text = songSinger, color = Color.LightGray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             }
         }
 

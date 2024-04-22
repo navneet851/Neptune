@@ -42,7 +42,7 @@ class NoRippleInteractionSource : MutableInteractionSource {
 }
 
 @Composable
-fun MainBottomNavigation(navController: NavController, bottomBarState: MutableState<Boolean>) {
+fun MainBottomNavigation(navController: NavController, bottomBarState: MutableState<Boolean>, bottomBarPlayerState : MutableState<Boolean>) {
 
     val navItems = listOf(
         Routes.Home,
@@ -65,14 +65,23 @@ fun MainBottomNavigation(navController: NavController, bottomBarState: MutableSt
                                 Color.Transparent,
                                 Color.Black
                             ),
-                            startY = 30f
+                            startY = 0f
                         )
                     )
             ) {
 
                 Column {
 
-                    MiniPlayer(navController)
+                    AnimatedVisibility(
+                        visible = bottomBarPlayerState.value,
+                        enter = slideInVertically(initialOffsetY = { it }),
+                        exit = slideOutVertically(targetOffsetY = { it }),
+                        content = {
+                            MiniPlayer(navController)
+                        }
+                    )
+
+
 
                     NavigationBar(
                         modifier = Modifier

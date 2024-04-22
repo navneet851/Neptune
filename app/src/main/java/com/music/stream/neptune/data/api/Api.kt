@@ -25,7 +25,7 @@ class Api @Inject constructor(){
                 .orderBy("id")
                 .get().await()
             val albums = snapshot.documents.mapNotNull { it.toObject(AlbumsModel::class.java) }
-            delay(200)
+            delay(300)
             emit(Response.Success(albums))
 
         }

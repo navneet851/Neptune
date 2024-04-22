@@ -61,7 +61,6 @@ import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.components.Loader
-import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
 
@@ -126,7 +125,7 @@ fun SumUpArtistScreen(
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
-    Palette().extractLightVibrantColorFromImageUrl(context = context, artist[0].coverUri){ color ->
+    Palette().extractMutedColorFromCoverUrl(context = context, artist[0].coverUri){ color ->
         dominentColor = color
     }
 
@@ -184,7 +183,7 @@ fun SumUpArtistScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     GlideImage(
-                        modifier = Modifier.size(225.dp),
+                        modifier = Modifier.size(240.dp),
                         model = artist[0].coverUri,
                         failure = placeholder(R.drawable.placeholder),
                         //loading = placeholder(R.drawable.album),
@@ -199,11 +198,12 @@ fun SumUpArtistScreen(
                     color = Color.White,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium)
+
                 Text(modifier = Modifier
                     .padding(20.dp, 0.dp, 0.dp, 0.dp),
                     text = "Made for You",
                     color = Color.Gray,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Medium)
 //                Text(modifier = Modifier
 //                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
@@ -238,6 +238,7 @@ fun SumUpArtistScreen(
                             contentScale = ContentScale.Crop,
                             contentDescription = "",
                         )
+
                         Icon(
                             modifier = Modifier
                                 .size(23.dp),
@@ -279,8 +280,13 @@ fun SumUpArtistScreen(
                             indication = null
                         ) {
                             songPlayer.playSong(artistSongs[song].url, context)
-                            navController.navigate("${Routes.Player.route}")
-                            artistViewModel.updateSongState(artistSongs[song].coverUri, artistSongs[song].title, artistSongs[song].singer, true)
+                            //navController.navigate("${Routes.Player.route}")
+                            artistViewModel.updateSongState(
+                                artistSongs[song].coverUri,
+                                artistSongs[song].title,
+                                artistSongs[song].singer,
+                                true
+                            )
                         }
                 ) {
 
@@ -290,7 +296,9 @@ fun SumUpArtistScreen(
                         modifier = Modifier.width(280.dp)
                     ) {
                         GlideImage(
-                            modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp).size(50.dp),
+                            modifier = Modifier
+                                .padding(0.dp, 0.dp, 10.dp, 0.dp)
+                                .size(50.dp),
                             model = artistSongs[song].coverUri,
                             contentScale = ContentScale.Crop,
                             failure = placeholder(R.drawable.placeholder),

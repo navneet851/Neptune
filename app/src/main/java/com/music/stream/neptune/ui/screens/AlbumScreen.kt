@@ -62,7 +62,6 @@ import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.components.Loader
-import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
 
@@ -125,7 +124,7 @@ fun SumUpAlbumScreen(
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
-    Palette().extractLightVibrantColorFromImageUrl(context = context, album[0].coverUri){ color ->
+    Palette().extractMutedColorFromCoverUrl(context = context, album[0].coverUri){ color ->
         dominentColor = color
     }
     Log.d("color", dominentColor.toString())
@@ -278,7 +277,7 @@ fun SumUpAlbumScreen(
                             indication = null
                         ) {
                             songPlayer.playSong(albumSongs[song].url, context)
-                            navController.navigate("${Routes.Player.route}")
+                            //navController.navigate("${Routes.Player.route}")
                             albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true)
                         }
                 ) {

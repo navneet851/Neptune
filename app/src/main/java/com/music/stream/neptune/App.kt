@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.music.stream.neptune.ui.navigation.MainBottomNavigation
 import com.music.stream.neptune.ui.navigation.MyNavHost
+import com.music.stream.neptune.ui.navigation.Routes
 
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -19,31 +20,33 @@ import com.music.stream.neptune.ui.navigation.MyNavHost
 @Composable
 fun App() {
     val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
+    val bottomBarPlayerState = rememberSaveable { (mutableStateOf(true))
+    }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     // Control TopBar and BottomBar
     when (navBackStackEntry?.destination?.route) {
-        "home" -> {
+        Routes.Home.route -> {
             bottomBarState.value = true
         }
-        "search" -> {
+        Routes.Search.route -> {
             bottomBarState.value = true
         }
-        "library" -> {
+        Routes.Library.route -> {
             bottomBarState.value = true
         }
-        "album" -> {
+        Routes.Album.route -> {
             bottomBarState.value = false
         }
     }
 
     Scaffold(
         bottomBar = {
-            MainBottomNavigation(navController = navController, bottomBarState = bottomBarState)
+            MainBottomNavigation(navController = navController, bottomBarState = bottomBarState, bottomBarPlayerState)
         }
     ) {
-        MyNavHost(navHostController = navController, bottomBarState = bottomBarState)
+        MyNavHost(navHostController = navController, bottomBarState = bottomBarState, bottomBarPlayerState)
     }
 }
 
