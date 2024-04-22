@@ -3,7 +3,9 @@ package com.music.stream.neptune.ui.screens
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,9 +50,13 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
 import com.music.stream.neptune.di.Palette
+import com.music.stream.neptune.di.songPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -56,9 +67,25 @@ fun PlayerScreen(navController: NavController) {
     val songCoverUri = playerViewModel.currentSongCoverUri.value
     val songPlayingState = playerViewModel.currentSongPlayingState.value
 
+    val songDuration by remember { mutableStateOf(maxOf(0f, songPlayer.getDuration().toFloat())) }
+    var songProgress by remember { mutableStateOf(maxOf(0f, songPlayer.getCurrentPosition().toFloat())) }
+    var songDurationText by remember { mutableStateOf("") }
+    var songProgressText by remember { mutableStateOf("") }
+
+    LaunchedEffect(key1 = true) {
+        withContext(Dispatchers.Main) {
+            while (true) {
+                songProgress = songPlayer.getCurrentPosition().toFloat()
+                songProgressText = playerViewModel.formatDuration(songProgress.toLong())
+                songDurationText = playerViewModel.formatDuration(songPlayer.getDuration())
+                delay(1000L) // update every second
+            }
+        }
+    }
+
     Log.d("checkplayer", songTitle)
 
-    playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
+    //playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
 
     val context = LocalContext.current
 
@@ -69,9 +96,6 @@ fun PlayerScreen(navController: NavController) {
         dominentColor = color
     }
 
-    var sliderPosition = remember{
-        mutableStateOf(0f)
-    }
         Column(modifier = Modifier
             .fillMaxSize()
             .background(
@@ -99,18 +123,50 @@ fun PlayerScreen(navController: NavController) {
                 contentDescription = "")
             Spacer(modifier = Modifier.padding(30.dp))
             PlayerInfo(songTitle, songSinger)
-            Slider(
-                modifier = Modifier
-                    .height(20.dp)
-                    .padding(20.dp),
-                value = sliderPosition.value,
-                onValueChange = {
-                    sliderPosition.value = it
+
+            CustomSlider(
+                value = songProgress,
+                onValueChange = { newValue ->
+                    songPlayer.seekTo(newValue.toLong())
                 },
+                valueRange = 0f..songDuration,
+                steps = 0,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 20.dp, 16.dp, 0.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = Color.White,
+                    activeTrackColor = Color.White,
+                    inactiveTrackColor = Color.Gray
+                )
             )
-            Spacer(modifier = Modifier.padding(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(25.dp, 0.dp)
+                ,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = songProgressText,
+                    color = Color.Gray,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = songDurationText,
+                    color = Color.Gray,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+
+            Spacer(modifier = Modifier.padding(5.dp))
             PlayerFull()
-            PlayerEndInfo()
+            //PlayerEndInfo()
         }
     }
 @Composable
@@ -154,7 +210,8 @@ fun PlayerInfo(songTitle: String, songSinger: String) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier
+                .width(270.dp)
         ) {
 //                        GlideImage(
 //                            modifier = Modifier.size(60.dp),
@@ -184,6 +241,35 @@ fun PlayerInfo(songTitle: String, songSinger: String) {
             painter = painterResource(id = R.drawable.ic_add),
             tint = Color.White,
             contentDescription = "")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSlider(
+    modifier: Modifier = Modifier,
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
+    steps: Int = 0,
+    colors: SliderColors = SliderDefaults.colors(),
+) {
+    Box(modifier = modifier.height(10.dp)) {
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            steps = steps,
+            colors = colors,
+            thumb = {
+                SliderDefaults.Thumb( //androidx.compose.material3.SliderDefaults
+                    interactionSource = remember { MutableInteractionSource() },
+                    modifier = Modifier.align(Alignment.Center),
+                    colors = colors,
+                    thumbSize = DpSize(9.dp, 9.dp)
+                )
+            }
+        )
     }
 }
 

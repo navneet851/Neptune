@@ -5,10 +5,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 
 object songPlayer {
-    private var player : ExoPlayer? = null
+    private var player: ExoPlayer? = null
 
-    fun playSong(song : String, context: Context) {
-        if (player == null){
+    fun playSong(song: String, context: Context) {
+        if (player == null) {
             player = ExoPlayer.Builder(context).build()
         }
         val mediaItem = MediaItem.fromUri(song)
@@ -16,10 +16,13 @@ object songPlayer {
         player!!.prepare()
         player!!.playWhenReady = true
 
+
     }
-    fun play(){
+
+    fun play() {
         player!!.play()
     }
+
     fun pause() {
         player!!.playWhenReady = false
     }
@@ -36,4 +39,13 @@ object songPlayer {
         player?.release()
         player = null
     }
+
+    fun getDuration(): Long {
+        return player?.duration ?: 0L
+    }
+
+    fun getCurrentPosition(): Long {
+        return player?.currentPosition ?: 0L
+    }
+
 }

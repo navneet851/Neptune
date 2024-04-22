@@ -228,7 +228,9 @@ fun SearchStickyBar(text: String, onTextChange: (String) -> Unit) {
                 focusedContainerColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = Color.Black
+
             ),
             singleLine = true,
             onValueChange = onTextChange,

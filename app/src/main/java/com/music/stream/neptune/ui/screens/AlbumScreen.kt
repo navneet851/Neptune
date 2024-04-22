@@ -114,13 +114,15 @@ fun SumUpAlbumScreen(
     albumName: String,
     context: Context
 ) {
+    val songsByAlbum: Map<String, List<SongsModel>> = songs.groupBy { it.album }
+    val albumSongs: List<SongsModel> = songsByAlbum[albumName]!!
+   // Log.d("checks", songsInAlbum.toString())
 
-    val albumSongs = songs.filter {
-        albumName == it.album
-    }
-    val album = albums.filter{
-        albumName == it.name
-    }
+//    val albumSongs = songs.filter {
+//        albumName == it.album
+//    }
+    val albumByName : Map<String, List<AlbumsModel>> = albums.groupBy { it.name }
+    val album : List<AlbumsModel> = albumByName[albumName]!!
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
