@@ -3,11 +3,13 @@ package com.music.stream.neptune
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.music.stream.neptune.ui.navigation.MainBottomNavigation
@@ -20,8 +22,7 @@ import com.music.stream.neptune.ui.navigation.Routes
 @Composable
 fun App() {
     val bottomBarState = rememberSaveable { (mutableStateOf(true)) }
-    val bottomBarPlayerState = rememberSaveable { (mutableStateOf(true))
-    }
+    val bottomBarPlayerState = rememberSaveable { (mutableStateOf(true)) }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -42,6 +43,9 @@ fun App() {
     }
 
     Scaffold(
+        modifier = Modifier
+            .navigationBarsPadding()
+        ,
         bottomBar = {
             MainBottomNavigation(navController = navController, bottomBarState = bottomBarState, bottomBarPlayerState)
         }

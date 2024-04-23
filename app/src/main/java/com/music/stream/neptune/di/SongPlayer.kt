@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 
-object songPlayer {
+object SongPlayer {
     private var player: ExoPlayer? = null
+
 
     fun playSong(song: String, context: Context) {
         if (player == null) {
@@ -17,6 +18,10 @@ object songPlayer {
         player!!.playWhenReady = true
 
 
+    }
+
+    fun isPlaying(): Boolean {
+        return player?.isPlaying ?: false
     }
 
     fun play() {

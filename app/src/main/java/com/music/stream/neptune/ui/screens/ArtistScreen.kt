@@ -59,7 +59,7 @@ import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
-import com.music.stream.neptune.di.songPlayer
+import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
@@ -279,7 +279,7 @@ fun SumUpArtistScreen(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            songPlayer.playSong(artistSongs[song].url, context)
+                            SongPlayer.playSong(artistSongs[song].url, context)
                             //navController.navigate("${Routes.Player.route}")
                             artistViewModel.updateSongState(
                                 artistSongs[song].coverUri,

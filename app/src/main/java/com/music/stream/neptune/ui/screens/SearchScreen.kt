@@ -55,9 +55,8 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
-import com.music.stream.neptune.di.songPlayer
+import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
-import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.SearchViewModel
 
@@ -151,8 +150,8 @@ fun SumUpSearchScreen(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        songPlayer.playSong(searchedList[song].url, context)
-                        navController.navigate("${Routes.Player.route}")
+                        SongPlayer.playSong(searchedList[song].url, context)
+                        //navController.navigate("${Routes.Player.route}")
                         searchViewModel.updateSongState(searchedList[song].coverUri, searchedList[song].title, searchedList[song].singer, true)
                     }
                 ){

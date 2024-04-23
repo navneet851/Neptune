@@ -50,7 +50,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
 import com.music.stream.neptune.di.Palette
-import com.music.stream.neptune.di.songPlayer
+import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
@@ -67,18 +67,19 @@ fun PlayerScreen(navController: NavController) {
     val songCoverUri = playerViewModel.currentSongCoverUri.value
     val songPlayingState = playerViewModel.currentSongPlayingState.value
 
-    val songDuration by remember { mutableStateOf(maxOf(0f, songPlayer.getDuration().toFloat())) }
-    var songProgress by remember { mutableStateOf(maxOf(0f, songPlayer.getCurrentPosition().toFloat())) }
-    var songDurationText by remember { mutableStateOf("") }
+    val songDuration by remember { mutableStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
+    var songProgress by remember { mutableStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
+    var songDurationText by remember { mutableStateOf("0") }
     var songProgressText by remember { mutableStateOf("") }
+
 
     LaunchedEffect(key1 = true) {
         withContext(Dispatchers.Main) {
             while (true) {
-                songProgress = songPlayer.getCurrentPosition().toFloat()
+                songProgress = SongPlayer.getCurrentPosition().toFloat()
                 songProgressText = playerViewModel.formatDuration(songProgress.toLong())
-                songDurationText = playerViewModel.formatDuration(songPlayer.getDuration())
-                delay(1000L) // update every second
+                songDurationText = playerViewModel.formatDuration(SongPlayer.getDuration())
+                delay(100L) // update every second
             }
         }
     }
@@ -127,7 +128,7 @@ fun PlayerScreen(navController: NavController) {
             CustomSlider(
                 value = songProgress,
                 onValueChange = { newValue ->
-                    songPlayer.seekTo(newValue.toLong())
+                    SongPlayer.seekTo(newValue.toLong())
                 },
                 valueRange = 0f..songDuration,
                 steps = 0,
@@ -153,19 +154,19 @@ fun PlayerScreen(navController: NavController) {
                     text = songProgressText,
                     color = Color.Gray,
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = songDurationText,
                     color = Color.Gray,
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Medium
                 )
             }
 
 
             Spacer(modifier = Modifier.padding(5.dp))
-            PlayerFull()
+            PlayerFull(songPlayingState, playerViewModel)
             //PlayerEndInfo()
         }
     }
@@ -296,7 +297,7 @@ fun PlayerEndInfo() {
 }
 
 @Composable
-fun PlayerFull() {
+fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel) {
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -324,9 +325,32 @@ fun PlayerFull() {
         ) {
             Icon(
                 modifier = Modifier
-                    .size(32.dp),
+                    .size(30.dp)
+                    .clickable {
+                        if (songPlayingState){
+                            SongPlayer.pause()
+                            playerViewModel.updateSongState(
+                                playerViewModel.currentSongCoverUri.value,
+                                playerViewModel.currentSongTitle.value,
+                                playerViewModel.currentSongSinger.value,
+                                false)
+                        }
+                        else{
+                            SongPlayer.play()
+                            playerViewModel.updateSongState(
+                                playerViewModel.currentSongCoverUri.value,
+                                playerViewModel.currentSongTitle.value,
+                                playerViewModel.currentSongSinger.value,
+                                true)
+                        }
+                    }
+                ,
                 tint = Color.Black,
-                painter = painterResource(id = R.drawable.ic_playing),
+                painter = if (songPlayingState)
+                    painterResource(id = R.drawable.ic_playing)
+                else
+                    painterResource(id = R.drawable.play_svgrepo_com)
+                ,
                 contentDescription = "")
         }
 

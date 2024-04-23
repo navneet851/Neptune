@@ -21,7 +21,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
         val seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) - TimeUnit.MINUTES.toSeconds(minutes)
         return String.format("%01d:%02d", minutes, seconds)
     }
-    fun updateSongState(coverUri: String, name: String, singer: String, playingState: Boolean) {
-        currentSongState.updateSongState(coverUri, name, singer, playingState)
+    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean) {
+        currentSongState.updateSongState(coverUri, title, singer, playingState)
     }
 }
