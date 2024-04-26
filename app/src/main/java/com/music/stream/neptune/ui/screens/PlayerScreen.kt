@@ -60,7 +60,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun PlayerScreen(navController: NavController) {
+fun PlayerScreen(navController: NavController, id: String) {
     val playerViewModel : PlayerViewModel = hiltViewModel()
     val songTitle = playerViewModel.currentSongTitle.value
     val songSinger = playerViewModel.currentSongSinger.value
