@@ -51,6 +51,7 @@ import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -81,6 +82,7 @@ fun MiniPlayer(navController: NavController) {
     val songCoverUri = miniPlayerViewModel.currentSongCoverUri.value
     val songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
     val songIndex = miniPlayerViewModel.currentSongIndex.value
+    val songAlbum = miniPlayerViewModel.currentSongAlbum.value
 
     val songDuration by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
     var songProgress by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
@@ -97,7 +99,7 @@ fun MiniPlayer(navController: NavController) {
     val context = LocalContext.current
 
     var darkVibrantColor by remember {
-        mutableStateOf(Color(AppBackground.toArgb()))
+        mutableStateOf(Color(GridBackground.toArgb()))
     }
     Palette().extractDominantColorFromImageUrl(context = context, songCoverUri){ color ->
         darkVibrantColor = color
@@ -119,7 +121,7 @@ fun MiniPlayer(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 //.background(Color.Green)
-                .padding(0.dp, 5.dp)
+                .padding(0.dp, 4.dp)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
@@ -173,7 +175,8 @@ fun MiniPlayer(navController: NavController) {
                                 songTitle,
                                 songSinger,
                                 false,
-                                songIndex
+                                songIndex,
+                                songAlbum
                             )
                         } else {
                             SongPlayer.play()
@@ -182,7 +185,8 @@ fun MiniPlayer(navController: NavController) {
                                 songTitle,
                                 songSinger,
                                 true,
-                                songIndex
+                                songIndex,
+                                songAlbum
                             )
                         }
                     }

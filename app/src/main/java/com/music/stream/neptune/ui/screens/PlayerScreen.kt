@@ -57,6 +57,7 @@ import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -76,18 +77,6 @@ fun PlayerScreen(navController: NavController) {
     var songDurationText by remember { mutableStateOf("0") }
     var songProgressText by remember { mutableStateOf("") }
 
-
-    LaunchedEffect(key1 = true) {
-        withContext(Dispatchers.Main) {
-            while (true) {
-                songProgress = SongPlayer.getCurrentPosition().toFloat()
-                songProgressText = playerViewModel.formatDuration(songProgress.toLong())
-                songDurationText = playerViewModel.formatDuration(SongPlayer.getDuration())
-                delay(100L) // update every second
-            }
-        }
-    }
-
     Log.d("checkplayer", songTitle)
 
     //playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
@@ -100,6 +89,32 @@ fun PlayerScreen(navController: NavController) {
     Palette().extractMutedColorFromCoverUrl(context = context, songCoverUri){ color ->
         dominentColor = color
     }
+
+
+
+    LaunchedEffect(key1 = true) {
+        withContext(Dispatchers.Main) {
+            while (true) {
+                    songProgress = SongPlayer.getCurrentPosition().toFloat()
+                    songProgressText = playerViewModel.formatDuration(songProgress.toLong())
+                    songDurationText = if (SongPlayer.getDuration() < 0){
+                        "0:00"
+                    }
+                    else{
+                        playerViewModel.formatDuration(SongPlayer.getDuration())
+                    }
+                if (playerViewModel.repeatState.value){
+                    if (songProgress >= songDuration) {
+                        SongPlayer.seekTo(0) // Restart the song
+                    }
+                }
+
+                delay(100L) // update every .0 second
+            }
+        }
+    }
+
+
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -119,7 +134,7 @@ fun PlayerScreen(navController: NavController) {
             Spacer(modifier = Modifier.padding(16.dp))
             GlideImage(
                 modifier = Modifier
-                    .size(370.dp)
+                    .size(385.dp)
                     .padding(20.dp)
                     .clip(RoundedCornerShape(10.dp))
                 ,
@@ -301,19 +316,36 @@ fun PlayerEndInfo() {
 }
 
 @Composable
-fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, context : Context) {
+fun PlayerFull(
+    songPlayingState: Boolean,
+    playerViewModel: PlayerViewModel,
+    context: Context
+) {
 
     val songsResponse by playerViewModel.songs.collectAsState()
-    val songs = if (songsResponse is Response.Success){
-        (songsResponse as Response.Success).data
-    } else {
-        emptyList<SongsModel>()
-    }
-    Log.d("queueSongc", playerViewModel.currentSongAlbum.value.toString())
-    val queueSongs = songs.filter {
-        playerViewModel.currentSongAlbum.value == it.album
-    }
-    Log.d("queueSong", queueSongs.toString())
+    val shuffle = playerViewModel.shuffleState.value
+    val repeat = playerViewModel.repeatState.value
+
+        val songs = if (songsResponse is Response.Success){
+            (songsResponse as Response.Success).data
+        } else {
+            emptyList<SongsModel>()
+        }
+//        Log.d("queueSongaa", songs.toString())
+//        Log.d("queueSongc", playerViewModel.currentSongAlbum.value.toString())
+//        Log.d("queueSong", queueSongs.toString())
+
+
+        val queueSongs = songs.filter {
+            if (playerViewModel.currentSongAlbum.value != ""){
+                playerViewModel.currentSongAlbum.value == it.album
+            }
+            else{
+                playerViewModel.currentSongSinger.value == it.singer
+            }
+
+        }
+
 
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -323,13 +355,43 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, cont
     ) {
         Icon(
             modifier = Modifier
-                .size(25.dp),
-            tint = Color.Gray,
+                .size(25.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (shuffle) {
+                        playerViewModel.updateShuffleState(false)
+                    } else {
+                        playerViewModel.updateShuffleState(true)
+                    }
+
+                }
+            ,
+            tint = if (shuffle){
+                Color(AppPalette.toArgb())
+            }
+            else{
+                Color.White
+            },
             painter = painterResource(id = R.drawable.ic_player_shuffle),
             contentDescription = "")
         Icon(
             modifier = Modifier
-                .size(35.dp),
+                .size(35.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (shuffle) {
+
+                        playerViewModel.playPreviousSong(queueSongs.shuffled(), context)
+                    } else {
+
+                        playerViewModel.playPreviousSong(queueSongs, context)
+                    }
+                }
+            ,
             tint = Color.White,
             painter = painterResource(id = R.drawable.ic_player_back),
             contentDescription = "")
@@ -337,33 +399,37 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, cont
             modifier = Modifier
                 .size(65.dp)
                 .clip(RoundedCornerShape(100.dp))
-                .background(Color.White),
+                .background(Color.White)
+                .clickable {
+                    if (songPlayingState) {
+                        SongPlayer.pause()
+                        playerViewModel.updateSongState(
+                            playerViewModel.currentSongCoverUri.value,
+                            playerViewModel.currentSongTitle.value,
+                            playerViewModel.currentSongSinger.value,
+                            false,
+                            playerViewModel.currentSongIndex.value,
+                            playerViewModel.currentSongAlbum.value
+                        )
+                    } else {
+                        SongPlayer.play()
+                        playerViewModel.updateSongState(
+                            playerViewModel.currentSongCoverUri.value,
+                            playerViewModel.currentSongTitle.value,
+                            playerViewModel.currentSongSinger.value,
+                            true,
+                            playerViewModel.currentSongIndex.value,
+                            playerViewModel.currentSongAlbum.value
+                        )
+                    }
+                }
+            ,
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 modifier = Modifier
                     .size(30.dp)
-                    .clickable {
-                        if (songPlayingState) {
-                            SongPlayer.pause()
-                            playerViewModel.updateSongState(
-                                playerViewModel.currentSongCoverUri.value,
-                                playerViewModel.currentSongTitle.value,
-                                playerViewModel.currentSongSinger.value,
-                                false,
-                                playerViewModel.currentSongIndex.value
-                            )
-                        } else {
-                            SongPlayer.play()
-                            playerViewModel.updateSongState(
-                                playerViewModel.currentSongCoverUri.value,
-                                playerViewModel.currentSongTitle.value,
-                                playerViewModel.currentSongSinger.value,
-                                true,
-                                playerViewModel.currentSongIndex.value
-                            )
-                        }
-                    }
+
                 ,
                 tint = Color.Black,
                 painter = if (songPlayingState)
@@ -377,8 +443,16 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, cont
         Icon(
             modifier = Modifier
                 .size(35.dp)
-                .clickable {
-                    playerViewModel.playNextSongs(queueSongs, context)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+
+                    if (shuffle) {
+                        playerViewModel.playNextSongs(queueSongs.shuffled(), context)
+                    } else {
+                        playerViewModel.playNextSongs(queueSongs, context)
+                    }
                 }
             ,
             tint = Color.White,
@@ -386,8 +460,25 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, cont
             contentDescription = "")
         Icon(
             modifier = Modifier
-                .size(20.dp),
-            tint = Color.Gray,
+                .size(20.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (repeat) {
+                        playerViewModel.updateRepeatState(false)
+                    } else {
+                        playerViewModel.updateRepeatState(true)
+                    }
+
+                }
+            ,
+            tint = if (repeat){
+                Color(AppPalette.toArgb())
+            }
+            else{
+                Color.White
+            },
             painter = painterResource(id = R.drawable.ic_repeat),
             contentDescription = "")
     }

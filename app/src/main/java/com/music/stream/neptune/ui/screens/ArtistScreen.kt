@@ -92,7 +92,7 @@ fun ArtistScreen(navController: NavController, artistName: String) {
                 val songsResponse = (songs as Response.Success).data
                 val artistsResponse = (artists as Response.Success).data
                 Log.d("homeMain", "Success-artists-songs. ${artistsResponse.toString()}")
-                SumUpArtistScreen(navController = navController, artistViewModel, songsResponse.shuffled(), artistsResponse, artistName)
+                SumUpArtistScreen(navController = navController, artistViewModel, songsResponse, artistsResponse, artistName)
             }
 
             is Response.Error -> {
@@ -285,7 +285,9 @@ fun SumUpArtistScreen(
                                 artistSongs[song].coverUri,
                                 artistSongs[song].title,
                                 artistSongs[song].singer,
-                                true
+                                true,
+                                song
+
                             )
                         }
                 ) {

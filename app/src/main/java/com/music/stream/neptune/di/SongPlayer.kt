@@ -53,4 +53,9 @@ object SongPlayer {
         return player?.currentPosition ?: 0L
     }
 
+    fun isPrepared(): Boolean {
+        val playerState = player?.playbackState
+        return playerState != null && playerState != ExoPlayer.STATE_IDLE && playerState != ExoPlayer.STATE_ENDED
+    }
+
 }

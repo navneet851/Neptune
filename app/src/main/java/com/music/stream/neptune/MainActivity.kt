@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.theme.NeptuneTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +36,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SongPlayer.release()
     }
 }
 
