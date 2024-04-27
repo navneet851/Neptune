@@ -58,17 +58,12 @@ fun MyNavHost(
             }
             LibraryScreen()
         }
-        composable("${Routes.Player.route}/{pString}"){navBackStackEntry ->
+        composable(Routes.Player.route){
             LaunchedEffect(playerState) {
                 bottomBarState.value = false
                 bottomBarPlayerState.value = playerState != ""
             }
-            /* Extracting the id from the route */
-            val pId = navBackStackEntry.arguments?.getString("pString")
-            /* We check if it's not null */
-            pId?.let { id->
-            PlayerScreen(navHostController, id)
-            }
+            PlayerScreen(navHostController)
         }
 
         composable("${Routes.Album.route}/{uString}") { navBackStackEntry ->

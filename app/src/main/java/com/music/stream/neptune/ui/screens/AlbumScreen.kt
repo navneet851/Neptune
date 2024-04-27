@@ -280,7 +280,8 @@ fun SumUpAlbumScreen(
                         ) {
                             SongPlayer.playSong(albumSongs[song].url, context)
                             //navController.navigate("${Routes.Player.route}")
-                            albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true)
+                            Log.d("queueSongss", song.toString())
+                            albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true, song, albumName)
                         }
                 ) {
 

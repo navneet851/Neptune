@@ -1,5 +1,6 @@
 package com.music.stream.neptune.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +51,8 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
+import com.music.stream.neptune.data.api.Response
+import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
@@ -60,7 +64,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun PlayerScreen(navController: NavController, id: String) {
+fun PlayerScreen(navController: NavController) {
     val playerViewModel : PlayerViewModel = hiltViewModel()
     val songTitle = playerViewModel.currentSongTitle.value
     val songSinger = playerViewModel.currentSongSinger.value
@@ -166,7 +170,7 @@ fun PlayerScreen(navController: NavController, id: String) {
 
 
             Spacer(modifier = Modifier.padding(5.dp))
-            PlayerFull(songPlayingState, playerViewModel)
+            PlayerFull(songPlayingState, playerViewModel, context)
             //PlayerEndInfo()
         }
     }
@@ -297,7 +301,20 @@ fun PlayerEndInfo() {
 }
 
 @Composable
-fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel) {
+fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel, context : Context) {
+
+    val songsResponse by playerViewModel.songs.collectAsState()
+    val songs = if (songsResponse is Response.Success){
+        (songsResponse as Response.Success).data
+    } else {
+        emptyList<SongsModel>()
+    }
+    Log.d("queueSongc", playerViewModel.currentSongAlbum.value.toString())
+    val queueSongs = songs.filter {
+        playerViewModel.currentSongAlbum.value == it.album
+    }
+    Log.d("queueSong", queueSongs.toString())
+
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -327,21 +344,24 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel) {
                 modifier = Modifier
                     .size(30.dp)
                     .clickable {
-                        if (songPlayingState){
+                        if (songPlayingState) {
                             SongPlayer.pause()
                             playerViewModel.updateSongState(
                                 playerViewModel.currentSongCoverUri.value,
                                 playerViewModel.currentSongTitle.value,
                                 playerViewModel.currentSongSinger.value,
-                                false)
-                        }
-                        else{
+                                false,
+                                playerViewModel.currentSongIndex.value
+                            )
+                        } else {
                             SongPlayer.play()
                             playerViewModel.updateSongState(
                                 playerViewModel.currentSongCoverUri.value,
                                 playerViewModel.currentSongTitle.value,
                                 playerViewModel.currentSongSinger.value,
-                                true)
+                                true,
+                                playerViewModel.currentSongIndex.value
+                            )
                         }
                     }
                 ,
@@ -356,7 +376,11 @@ fun PlayerFull(songPlayingState: Boolean, playerViewModel: PlayerViewModel) {
 
         Icon(
             modifier = Modifier
-                .size(35.dp),
+                .size(35.dp)
+                .clickable {
+                    playerViewModel.playNextSongs(queueSongs, context)
+                }
+            ,
             tint = Color.White,
             painter = painterResource(id = R.drawable.ic_player_skip),
             contentDescription = "")
