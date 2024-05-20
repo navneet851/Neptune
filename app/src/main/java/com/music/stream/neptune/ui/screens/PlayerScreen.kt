@@ -77,6 +77,13 @@ fun PlayerScreen(navController: NavController) {
     var songDurationText by remember { mutableStateOf("0") }
     var songProgressText by remember { mutableStateOf("") }
 
+    songDurationText = if (SongPlayer.getDuration() < 0){
+        "0:00"
+    }
+    else{
+        playerViewModel.formatDuration(SongPlayer.getDuration())
+    }
+
     Log.d("checkplayer", songTitle)
 
     //playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
@@ -97,12 +104,7 @@ fun PlayerScreen(navController: NavController) {
             while (true) {
                     songProgress = SongPlayer.getCurrentPosition().toFloat()
                     songProgressText = playerViewModel.formatDuration(songProgress.toLong())
-                    songDurationText = if (SongPlayer.getDuration() < 0){
-                        "0:00"
-                    }
-                    else{
-                        playerViewModel.formatDuration(SongPlayer.getDuration())
-                    }
+
                 if (playerViewModel.repeatState.value){
                     if (songProgress >= songDuration) {
                         SongPlayer.seekTo(0) // Restart the song

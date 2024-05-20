@@ -84,13 +84,16 @@ fun MiniPlayer(navController: NavController) {
     val songIndex = miniPlayerViewModel.currentSongIndex.value
     val songAlbum = miniPlayerViewModel.currentSongAlbum.value
 
+
     val songDuration by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
     var songProgress by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
 
-    LaunchedEffect(key1  = true) {
+    LaunchedEffect(key1  = miniPlayerViewModel.songProgress.value) {
         withContext(Dispatchers.Main) {
             while (true) {
-                songProgress = SongPlayer.getCurrentPosition().toFloat()
+                Log.d("songProgress", songProgress.toString())
+               // songProgress = SongPlayer.getCurrentPosition().toFloat()
+                miniPlayerViewModel.songProgress.value = SongPlayer.getCurrentPosition().toFloat()
                 delay(100L) // update every .00 second
             }
         }
@@ -194,11 +197,11 @@ fun MiniPlayer(navController: NavController) {
         }
 
         CustomSlider(
-            value = songProgress,
+            value = miniPlayerViewModel.songProgress.value,
             onValueChange = { newValue ->
                 SongPlayer.seekTo(newValue.toLong())
             },
-            valueRange = 0f..songDuration,
+            valueRange = 0f..1f,
             steps = 0,
             modifier = Modifier
                 .fillMaxWidth()
