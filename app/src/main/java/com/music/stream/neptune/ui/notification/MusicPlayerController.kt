@@ -1,6 +1,5 @@
 package com.music.stream.neptune.ui.notification
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,10 +26,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -40,9 +37,15 @@ import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.screens.CustomSlider
 
 @OptIn(ExperimentalGlideComposeApi::class)
-@Preview
 @Composable
-fun MusicPlayerController() {
+fun MusicPlayerController(
+    songName: String,
+    artistName: String,
+    isPlaying: Boolean,
+    onPlayPauseClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
     //val notificationViewModel : PlayerViewModel = hiltViewModel()
 
 
@@ -76,7 +79,12 @@ fun MusicPlayerController() {
                 fontSize = 14.sp,
             )
 
-            NotificationPlayer(songPlayingState = false, context = LocalContext.current)
+            NotificationPlayer(
+                songPlayingState = isPlaying,
+                onPlayPauseClick = onPlayPauseClick,
+                onPreviousClick = onPreviousClick,
+                onNextClick = onNextClick
+            )
 
             CustomSlider(
                 value = 0f,
@@ -164,7 +172,9 @@ fun MusicPlayerController() {
 @Composable
 fun NotificationPlayer(
     songPlayingState: Boolean,
-    context: Context
+    onPlayPauseClick: () -> Unit,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
