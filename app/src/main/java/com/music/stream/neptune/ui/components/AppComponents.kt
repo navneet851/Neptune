@@ -53,9 +53,7 @@ import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 @Composable
 fun Loader() {
@@ -86,18 +84,25 @@ fun MiniPlayer(navController: NavController) {
 
 
     val songDuration by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
-    var songProgress by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
+    var songProgress by remember { mutableFloatStateOf(0f) }
 
-//    LaunchedEffect(key1  = miniPlayerViewModel.so.value) {
-//        withContext(Dispatchers.Main) {
-//            while (true) {
-//                Log.d("songProgress", songProgress.toString())
-//               // songProgress = SongPlayer.getCurrentPosition().toFloat()
-//                miniPlayerViewModel.songProgress.value = SongPlayer.getCurrentPosition().toFloat()
-//                delay(100L) // update every .00 second
-//            }
-//        }
-//    }
+    songProgress = if (SongPlayer.getDuration() > 0) {
+        SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat()
+    } else {
+        0f
+    }
+
+    LaunchedEffect(key1  = songPlayingState) {
+            while (songPlayingState) {
+                songProgress = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat()
+                delay(300L) // update every .00 second
+
+                if (SongPlayer.getCurrentPosition().toFloat() != 0f && SongPlayer.getCurrentPosition() >= SongPlayer.getDuration()) {
+                    navController.navigate(Routes.Player.route)
+                }
+
+        }
+    }
 
     val context = LocalContext.current
 
@@ -196,10 +201,11 @@ fun MiniPlayer(navController: NavController) {
             )
         }
 
+
         CustomSlider(
-            value = miniPlayerViewModel.songProgress.value,
+            value = songProgress,
             onValueChange = { newValue ->
-                SongPlayer.seekTo(newValue.toLong())
+                SongPlayer.seekTo((newValue * SongPlayer.getDuration()).toLong())
             },
             valueRange = 0f..1f,
             steps = 0,
