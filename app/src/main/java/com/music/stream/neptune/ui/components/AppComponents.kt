@@ -88,16 +88,16 @@ fun MiniPlayer(navController: NavController) {
     val songDuration by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
     var songProgress by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
 
-    LaunchedEffect(key1  = miniPlayerViewModel.songProgress.value) {
-        withContext(Dispatchers.Main) {
-            while (true) {
-                Log.d("songProgress", songProgress.toString())
-               // songProgress = SongPlayer.getCurrentPosition().toFloat()
-                miniPlayerViewModel.songProgress.value = SongPlayer.getCurrentPosition().toFloat()
-                delay(100L) // update every .00 second
-            }
-        }
-    }
+//    LaunchedEffect(key1  = miniPlayerViewModel.so.value) {
+//        withContext(Dispatchers.Main) {
+//            while (true) {
+//                Log.d("songProgress", songProgress.toString())
+//               // songProgress = SongPlayer.getCurrentPosition().toFloat()
+//                miniPlayerViewModel.songProgress.value = SongPlayer.getCurrentPosition().toFloat()
+//                delay(100L) // update every .00 second
+//            }
+//        }
+//    }
 
     val context = LocalContext.current
 

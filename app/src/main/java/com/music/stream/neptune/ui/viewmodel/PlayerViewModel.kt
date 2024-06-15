@@ -45,16 +45,31 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
 
     // Function to play the next song in the album
     fun playNextSongs(queueSongs : List<SongsModel>, context: Context) {
-        if (currentSongIndex.value < queueSongs.size - 1) {
+        if (queueSongs.isNotEmpty()) {
+            if (currentSongIndex.value < queueSongs.size - 1) {
 
-            val nextSong = queueSongs[currentSongIndex.value+1]
-            updateSongState(nextSong.coverUri, nextSong.title, nextSong.singer, true, (currentSongIndex.value + 1), currentSongAlbum.value)
-            SongPlayer.playSong(nextSong.url, context)
-        }
-        else{
-            val nextSong = queueSongs[0]
-            updateSongState(nextSong.coverUri, nextSong.title, nextSong.singer, true, 0, currentSongAlbum.value)
-            SongPlayer.playSong(nextSong.url, context)
+                val nextSong = queueSongs[currentSongIndex.value + 1]
+                updateSongState(
+                    nextSong.coverUri,
+                    nextSong.title,
+                    nextSong.singer,
+                    true,
+                    (currentSongIndex.value + 1),
+                    currentSongAlbum.value
+                )
+                SongPlayer.playSong(nextSong.url, context)
+            } else {
+                val nextSong = queueSongs[0]
+                updateSongState(
+                    nextSong.coverUri,
+                    nextSong.title,
+                    nextSong.singer,
+                    true,
+                    0,
+                    currentSongAlbum.value
+                )
+                SongPlayer.playSong(nextSong.url, context)
+            }
         }
     }
 

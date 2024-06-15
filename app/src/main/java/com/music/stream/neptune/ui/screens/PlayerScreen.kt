@@ -59,9 +59,7 @@ import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -83,6 +81,12 @@ fun PlayerScreen(navController: NavController) {
     else{
         playerViewModel.formatDuration(SongPlayer.getDuration())
     }
+    songProgressText = if (SongPlayer.getCurrentPosition() < 0){
+        "0:00"
+    }
+    else{
+        playerViewModel.formatDuration(SongPlayer.getCurrentPosition())
+    }
 
     Log.d("checkplayer", songTitle)
 
@@ -97,24 +101,64 @@ fun PlayerScreen(navController: NavController) {
         dominentColor = color
     }
 
+    val songsResponse by playerViewModel.songs.collectAsState()
+    val shuffle = playerViewModel.shuffleState.value
+    val repeat = playerViewModel.repeatState.value
+
+    val songs = if (songsResponse is Response.Success){
+        (songsResponse as Response.Success).data
+    } else {
+        emptyList<SongsModel>()
+    }
 
 
-    LaunchedEffect(key1 = true) {
-        withContext(Dispatchers.Main) {
-            while (true) {
+
+    val queueSongs = songs.filter {
+        if (playerViewModel.currentSongAlbum.value != ""){
+            playerViewModel.currentSongAlbum.value == it.album
+        }
+        else{
+            playerViewModel.currentSongSinger.value == it.singer
+        }
+
+    }
+
+    if((songProgressText != "0:00") && (songDurationText == songProgressText)){
+        if(repeat){
+            SongPlayer.seekTo(0)
+        }
+        else{
+            playerViewModel.playNextSongs(queueSongs, context)
+        }
+    }
+
+    Log.d("queueSongaa", songs.toString())
+    Log.d("queueSongc", playerViewModel.currentSongAlbum.value.toString())
+    Log.d("queueSong", queueSongs.toString())
+
+    LaunchedEffect(key1 = songPlayingState) {
+
+            while (songPlayingState) {
+
                     songProgress = SongPlayer.getCurrentPosition().toFloat()
                     songProgressText = playerViewModel.formatDuration(songProgress.toLong())
 
-                if (playerViewModel.repeatState.value){
-                    if (songProgress >= songDuration) {
-                        SongPlayer.seekTo(0) // Restart the song
-                    }
-                }
+//                if (songProgress >= songDuration ) {
+//                    if (playerViewModel.repeatState.value){
+//                        SongPlayer.seekTo(0) // Restart the song
+//                    }
+//                }
 
-                delay(100L) // update every .0 second
+
+                delay(300L) // update every .0 second
             }
-        }
     }
+
+
+
+
+
+
 
 
 
@@ -147,11 +191,11 @@ fun PlayerScreen(navController: NavController) {
             PlayerInfo(songTitle, songSinger)
 
             CustomSlider(
-                value = songProgress,
+                value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
                 onValueChange = { newValue ->
-                    SongPlayer.seekTo(newValue.toLong())
+                    SongPlayer.seekTo((newValue * SongPlayer.getDuration()).toLong())
                 },
-                valueRange = 0f..songDuration,
+                valueRange = 0f..1f,
                 steps = 0,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,7 +231,7 @@ fun PlayerScreen(navController: NavController) {
 
 
             Spacer(modifier = Modifier.padding(5.dp))
-            PlayerFull(songPlayingState, playerViewModel, context)
+            PlayerFull(songPlayingState, playerViewModel, context, shuffle, repeat, queueSongs)
             //PlayerEndInfo()
         }
     }
@@ -321,32 +365,13 @@ fun PlayerEndInfo() {
 fun PlayerFull(
     songPlayingState: Boolean,
     playerViewModel: PlayerViewModel,
-    context: Context
+    context: Context,
+    shuffle: Boolean,
+    repeat: Boolean,
+    queueSongs: List<SongsModel>
 ) {
 
-    val songsResponse by playerViewModel.songs.collectAsState()
-    val shuffle = playerViewModel.shuffleState.value
-    val repeat = playerViewModel.repeatState.value
 
-        val songs = if (songsResponse is Response.Success){
-            (songsResponse as Response.Success).data
-        } else {
-            emptyList<SongsModel>()
-        }
-//        Log.d("queueSongaa", songs.toString())
-//        Log.d("queueSongc", playerViewModel.currentSongAlbum.value.toString())
-//        Log.d("queueSong", queueSongs.toString())
-
-
-        val queueSongs = songs.filter {
-            if (playerViewModel.currentSongAlbum.value != ""){
-                playerViewModel.currentSongAlbum.value == it.album
-            }
-            else{
-                playerViewModel.currentSongSinger.value == it.singer
-            }
-
-        }
 
 
     Row(verticalAlignment = Alignment.CenterVertically,
