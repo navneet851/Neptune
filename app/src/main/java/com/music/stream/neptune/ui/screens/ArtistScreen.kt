@@ -125,7 +125,7 @@ fun SumUpArtistScreen(
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
-    Palette().extractMutedColorFromCoverUrl(context = context, artist[0].coverUri){ color ->
+    Palette().extractSecondColorFromCoverUrl(context = context, artist[0].coverUri){ color ->
         dominentColor = color
     }
 
@@ -217,6 +217,7 @@ fun SumUpArtistScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(52.dp)
                         .padding(20.dp, 0.dp)
                 ){
 
@@ -247,19 +248,35 @@ fun SumUpArtistScreen(
                             contentDescription = "")
                     }
 
-                    androidx.compose.foundation.layout.Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(RoundedCornerShape(100.dp))
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
+                    if(!artistViewModel.currentSongPlayingState.value && artistSongs.isNotEmpty()){
+                        androidx.compose.foundation.layout.Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(25.dp),
-                            tint = Color.Black,
-                            painter = painterResource(id = R.drawable.ic_playing),
-                            contentDescription = "")
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(100.dp))
+                                .background(Color.White)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    SongPlayer.playSong(artistSongs[0].url, context)
+                                    artistViewModel.updateSongState(
+                                        artistSongs[0].coverUri,
+                                        artistSongs[0].title,
+                                        artistSongs[0].singer,
+                                        true,
+                                        0
+
+                                    )
+                                }
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(25.dp),
+                                tint = Color.Black,
+                                painter = painterResource(id = R.drawable.play_svgrepo_com),
+                                contentDescription = "")
+                        }
                     }
                 }
 
@@ -280,7 +297,6 @@ fun SumUpArtistScreen(
                             indication = null
                         ) {
                             SongPlayer.playSong(artistSongs[song].url, context)
-                            //navController.navigate("${Routes.Player.route}")
                             artistViewModel.updateSongState(
                                 artistSongs[song].coverUri,
                                 artistSongs[song].title,

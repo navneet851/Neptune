@@ -97,7 +97,7 @@ fun PlayerScreen(navController: NavController) {
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
-    Palette().extractMutedColorFromCoverUrl(context = context, songCoverUri){ color ->
+    Palette().extractSecondColorFromCoverUrl(context = context, songCoverUri){ color ->
         dominentColor = color
     }
 

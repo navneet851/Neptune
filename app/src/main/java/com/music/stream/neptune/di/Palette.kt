@@ -27,7 +27,7 @@ class Palette {
 //            })
 //    }
 
-    fun extractDominantColorFromImageUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
+    fun extractFirstColorFromImageUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(imageUrl)
@@ -48,7 +48,7 @@ class Palette {
                 }
             })
     }
-    fun extractMutedColorFromCoverUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
+    fun extractSecondColorFromCoverUrl(context: Context, imageUrl: String, onColorExtracted: (Color) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(imageUrl)

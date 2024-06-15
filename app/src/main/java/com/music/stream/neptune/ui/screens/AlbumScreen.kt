@@ -126,7 +126,7 @@ fun SumUpAlbumScreen(
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
-    Palette().extractMutedColorFromCoverUrl(context = context, album[0].coverUri){ color ->
+    Palette().extractSecondColorFromCoverUrl(context = context, album[0].coverUri){ color ->
         dominentColor = color
     }
     Log.d("color", dominentColor.toString())
@@ -217,7 +217,8 @@ fun SumUpAlbumScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp, 0.dp)
+                        .height(52.dp)
+                        .padding(25.dp, 0.dp)
                 ){
 
                     Row(horizontalArrangement = Arrangement.SpaceBetween,
@@ -246,77 +247,89 @@ fun SumUpAlbumScreen(
                             contentDescription = "")
                     }
 
-                    androidx.compose.foundation.layout.Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(RoundedCornerShape(100.dp))
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
+
+                    if(!albumViewModel.currentSongPlayingState.value && albumSongs.isNotEmpty()){
+                        androidx.compose.foundation.layout.Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .size(25.dp),
-                            tint = Color.Black,
-                            painter = painterResource(id = R.drawable.ic_playing),
-                            contentDescription = "")
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(100.dp))
+                                .background(Color.White)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                        SongPlayer.playSong(albumSongs[0].url, context)
+                                        albumViewModel.updateSongState(albumSongs[0].coverUri, albumSongs[0].title, albumSongs[0].singer, true, 0, albumName)
+                                }
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(25.dp),
+                                tint = Color.Black,
+                                painter = painterResource(id = R.drawable.play_svgrepo_com),
+                                contentDescription = "")
+                        }
                     }
+
+
                 }
 
             }
 
 //            Spacer(modifier = Modifier.padding(25.dp))
 
-
-            repeat(albumSongs.size) {song ->
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp, 8.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            SongPlayer.playSong(albumSongs[song].url, context)
-                            //navController.navigate("${Routes.Player.route}")
-                            Log.d("queueSongss", song.toString())
-                            albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true, song, albumName)
-                        }
-                ) {
-
+            if(albumSongs.isNotEmpty()){
+                repeat(albumSongs.size) {song ->
                     Row(
-                        horizontalArrangement = Arrangement.Start,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.width(200.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp, 8.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                SongPlayer.playSong(albumSongs[song].url, context)
+                                albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true, song, albumName)
+                            }
                     ) {
+
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.width(200.dp)
+                        ) {
 //                        GlideImage(
 //                            modifier = Modifier.size(60.dp),
 //                            model = albumSongs[song].coverUri,
 //                            contentScale = ContentScale.Crop,
 //                            contentDescription = ""
 //                        )
-                        Column {
-                            Text(
-                                text = albumSongs[song].title,
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Text(
-                                text = albumSongs[song].singer,
-                                color = Color.Gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Column {
+                                Text(
+                                    text = albumSongs[song].title,
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = albumSongs[song].singer,
+                                    color = Color.Gray,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
-                    }
 
-                    Icon(
-                        imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = ""
-                    )
+                        Icon(
+                            imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = ""
+                        )
+                    }
                 }
             }
+
             Spacer(modifier = Modifier.padding(80.dp))
         }
 

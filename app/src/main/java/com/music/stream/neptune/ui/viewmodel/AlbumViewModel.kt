@@ -1,5 +1,6 @@
 package com.music.stream.neptune.ui.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.stream.neptune.data.api.Response
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumViewModel @Inject constructor(private val repository: AppRepository, private val currentSongState: CurrentSongState) :  ViewModel() {
 
+    val currentSongPlayingState: State<Boolean> get() = currentSongState.playingState
 
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
     val songs : StateFlow<Response<List<SongsModel>>> = _songs

@@ -97,7 +97,7 @@ fun MiniPlayer(navController: NavController) {
                 songProgress = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat()
                 delay(300L) // update every .00 second
 
-                if (SongPlayer.getCurrentPosition().toFloat() != 0f && SongPlayer.getCurrentPosition() >= SongPlayer.getDuration()) {
+                if (SongPlayer.getCurrentPosition().toFloat() > 0f && SongPlayer.getCurrentPosition() >= SongPlayer.getDuration()) {
                     navController.navigate(Routes.Player.route)
                 }
 
@@ -109,7 +109,7 @@ fun MiniPlayer(navController: NavController) {
     var darkVibrantColor by remember {
         mutableStateOf(Color(GridBackground.toArgb()))
     }
-    Palette().extractDominantColorFromImageUrl(context = context, songCoverUri){ color ->
+    Palette().extractFirstColorFromImageUrl(context = context, songCoverUri){ color ->
         darkVibrantColor = color
     }
     Log.d("checkplayermini", songTitle)
