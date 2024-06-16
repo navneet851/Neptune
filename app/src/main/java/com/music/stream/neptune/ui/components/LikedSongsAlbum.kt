@@ -54,8 +54,8 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
-import com.music.stream.neptune.data.pref.getLikedSongIds
-import com.music.stream.neptune.data.pref.getSongsByIds
+import com.music.stream.neptune.data.preferences.getLikedSongIds
+import com.music.stream.neptune.data.preferences.getSongsByIds
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.theme.AppBackground
@@ -255,7 +255,7 @@ fun LikedSongsScreen(
                         Row(
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.width(200.dp)
+                            modifier = Modifier.width(280.dp)
                         ) {
                             GlideImage(
                                 modifier = Modifier

@@ -53,12 +53,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
-import com.music.stream.neptune.data.pref.addLikedSongId
-import com.music.stream.neptune.data.pref.isSongLiked
-import com.music.stream.neptune.data.pref.removeLikedSongId
+import com.music.stream.neptune.data.preferences.addLikedSongId
+import com.music.stream.neptune.data.preferences.isSongLiked
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
-import com.music.stream.neptune.ui.navigation.Routes
+import com.music.stream.neptune.ui.components.Snackbar
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
@@ -166,22 +166,24 @@ fun PlayerScreen(navController: NavController) {
 
 
 
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        dominentColor,
-                        Color.Black
-                    ),
-                    startY = 100f
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            dominentColor,
+                            Color.Black
+                        ),
+                        startY = 100f
+                    )
                 )
-            )
-            .statusBarsPadding(),
+                .statusBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             PlayerTopBar(navController)
-            Spacer(modifier = Modifier.padding(16.dp))
+            //Spacer(modifier = Modifier.padding(16.dp))
             GlideImage(
                 modifier = Modifier
                     .size(385.dp)
@@ -191,54 +193,72 @@ fun PlayerScreen(navController: NavController) {
                 model = songCoverUri,
                 contentScale = ContentScale.Crop,
                 contentDescription = "")
-            Spacer(modifier = Modifier.padding(30.dp))
-            PlayerInfo(songTitle, songSinger, songId, context)
+            //Spacer(modifier = Modifier.padding(30.dp))
 
-            CustomSlider(
-                value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
-                onValueChange = { newValue ->
-                    SongPlayer.seekTo((newValue * SongPlayer.getDuration()).toLong())
-                },
-                valueRange = 0f..1f,
-                steps = 0,
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 20.dp, 16.dp, 0.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.White,
-                    inactiveTrackColor = Color.Gray
-                )
-            )
+                    .height(300.dp)
+                    .padding(0.dp, 0.dp, 0.dp, 50.dp)
+            ){
+                PlayerInfo(songTitle, songSinger, songId, context)
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(25.dp, 0.dp)
-                ,
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = songProgressText,
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
+                CustomSlider(
+                    value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
+                    onValueChange = { newValue ->
+                        SongPlayer.seekTo((newValue * SongPlayer.getDuration()).toLong())
+                    },
+                    valueRange = 0f..1f,
+                    steps = 0,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 20.dp, 16.dp, 0.dp),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = Color.White,
+                        inactiveTrackColor = Color.Gray
+                    )
                 )
-                Text(
-                    text = songDurationText,
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(25.dp, 0.dp)
+                    ,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = songProgressText,
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = songDurationText,
+                        color = Color.Gray,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+
+                Spacer(modifier = Modifier.padding(5.dp))
+                PlayerFull(songPlayingState, playerViewModel, context, shuffle, repeat, queueSongs)
             }
 
-
-            Spacer(modifier = Modifier.padding(5.dp))
-            PlayerFull(songPlayingState, playerViewModel, context, shuffle, repeat, queueSongs)
             //PlayerEndInfo()
         }
     }
+
+
+
+
+
+
+
+
+
 @Composable
 fun PlayerTopBar(navController: NavController) {
     Row(verticalAlignment = Alignment.CenterVertically,
@@ -247,8 +267,11 @@ fun PlayerTopBar(navController: NavController) {
             .padding(16.dp)
     ) {
         Icon(modifier = Modifier
-            .clickable {
-                       navController.navigate(Routes.Home.route)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                       navController.popBackStack()
             },
             painter = painterResource(id = R.drawable.ic_down),
             tint = Color.White,
@@ -270,7 +293,21 @@ fun PlayerTopBar(navController: NavController) {
 @Composable
 fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Context) {
 
+    var snackbarMessage by remember {
+        mutableStateOf("")
+    }
+    var snackbarVisible by remember {
+        mutableStateOf(false)
+    }
 
+    LaunchedEffect(snackbarVisible) {
+        delay(1500)
+        snackbarVisible = false
+    }
+
+    var isLiked by remember {
+        mutableStateOf(isSongLiked(context, songId.toString()))
+    }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -280,6 +317,10 @@ fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Cont
             .padding(25.dp, 10.dp)
     ) {
 
+        if (snackbarVisible){
+            Snackbar(showMessage = snackbarMessage)
+        }
+        else{
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
@@ -315,21 +356,32 @@ fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Cont
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    if (isSongLiked(context, songId.toString())) {
+                    if (isLiked) {
                         removeLikedSongId(context, songId.toString())
+                        snackbarMessage = "Removed from Liked Songs"
                     } else {
                         addLikedSongId(context, songId.toString())
+                        snackbarMessage = "Added to Liked Songs"
                     }
+                    snackbarVisible = true
+                    isLiked = isSongLiked(context, songId.toString())
                 },
-            painter = if (isSongLiked(context, songId.toString())){
+            painter = if (isLiked){
                 painterResource(id = R.drawable.added)
             }
             else{
                 painterResource(id = R.drawable.ic_add)
             }
             ,
-            tint = Color.White,
-            contentDescription = "")
+            tint = if (isLiked){
+                Color(AppPalette.toArgb())
+            }
+            else{
+                Color.White
+            },
+            contentDescription = ""
+        )
+    }
     }
 
 

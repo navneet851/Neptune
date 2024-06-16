@@ -1,4 +1,4 @@
-package com.music.stream.neptune.data.pref
+package com.music.stream.neptune.data.preferences
 
 import android.content.Context
 import com.music.stream.neptune.data.entity.SongsModel

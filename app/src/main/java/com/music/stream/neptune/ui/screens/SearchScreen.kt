@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -186,14 +185,14 @@ fun SumUpSearchScreen(
 
 @Composable
 fun SearchTopBar() {
-    Row(horizontalArrangement = Arrangement.SpaceBetween,
+    Row(horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(text = "Search", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Icon(imageVector = Icons.Default.Person, contentDescription = "", tint = Color.White)
+        //Icon(imageVector = Icons.Default.Person, contentDescription = "", tint = Color.White)
     }
 
 }

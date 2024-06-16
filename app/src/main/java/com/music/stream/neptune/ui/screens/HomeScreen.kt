@@ -217,7 +217,7 @@ fun HomePlaylistGrid(navController: NavController, albums: List<AlbumsModel>) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .padding(2.dp)
-                            .clip(RoundedCornerShape(3.dp))
+                            .clip(RoundedCornerShape(5.dp))
                             .background(Color(GridBackground.toArgb()))
                             .width(180.dp)
                             .clickable(

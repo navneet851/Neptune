@@ -263,3 +263,23 @@ fun CustomSlider(
         )
     }
 }
+
+
+@Composable
+fun Snackbar(showMessage : String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ){
+        Text(
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
+            color = Color.Black,
+            text = showMessage
+        )
+    }
+}

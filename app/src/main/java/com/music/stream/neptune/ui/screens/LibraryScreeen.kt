@@ -10,12 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -46,25 +41,7 @@ fun LibraryScreen() {
                 },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color(AppBackground.toArgb()),
-                        ),
-                    navigationIcon = {
-                        IconButton(onClick = { /* do something */ }) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* do something */ }) {
-                            Icon(
-                                modifier = Modifier.size(35.dp),
-                                tint = Color.White,
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    }
+                        )
             )
         }
     ) {
