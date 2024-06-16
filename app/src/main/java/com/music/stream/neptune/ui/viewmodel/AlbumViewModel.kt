@@ -27,8 +27,8 @@ class AlbumViewModel @Inject constructor(private val repository: AppRepository, 
     private val _albums : MutableStateFlow<Response<List<AlbumsModel>>> = MutableStateFlow(Response.Loading())
     val albums : StateFlow<Response<List<AlbumsModel>>> = _albums
 
-    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songIndex : Int = 0, album : String = "") {
-        currentSongState.updateSongState(coverUri, title, singer, playingState, songIndex, album)
+    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songId: Int, songIndex : Int = 0, album : String = "") {
+        currentSongState.updateSongState(coverUri, title, singer, playingState, songId, songIndex, album)
     }
 
     init {

@@ -61,6 +61,7 @@ import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
+import com.music.stream.neptune.ui.components.LikedSongsScreen
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
@@ -93,11 +94,21 @@ fun AlbumScreen(navController: NavController, albumName: String) {
                 val albumsResponse = (albums as Response.Success).data
                 val songsResponse = (songs as Response.Success).data
                 Log.d("homeMain", "Success..-albums")
-                SumUpAlbumScreen(navController = navController,albumViewModel, albumsResponse, songsResponse, albumName, context)
+
+                if (albumName == "Liked Songs"){
+                    LikedSongsScreen(albumsResponse, songsResponse, navController, context)
+                }
+                else{
+                    SumUpAlbumScreen(navController = navController,albumViewModel, albumsResponse, songsResponse, albumName, context)
+                }
             }
 
             is Response.Error -> {
                 Log.d("homeMain", "Error!!-albums")
+            }
+
+            else -> {
+                Log.d("homeMain", "else")
             }
         }
     }
@@ -259,8 +270,16 @@ fun SumUpAlbumScreen(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
                                 ) {
-                                        SongPlayer.playSong(albumSongs[0].url, context)
-                                        albumViewModel.updateSongState(albumSongs[0].coverUri, albumSongs[0].title, albumSongs[0].singer, true, 0, albumName)
+                                    SongPlayer.playSong(albumSongs[0].url, context)
+                                    albumViewModel.updateSongState(
+                                        albumSongs[0].coverUri,
+                                        albumSongs[0].title,
+                                        albumSongs[0].singer,
+                                        true,
+                                        albumSongs[0].id,
+                                        0,
+                                        albumName
+                                    )
                                 }
                         ) {
                             Icon(
@@ -292,7 +311,15 @@ fun SumUpAlbumScreen(
                                 indication = null
                             ) {
                                 SongPlayer.playSong(albumSongs[song].url, context)
-                                albumViewModel.updateSongState(albumSongs[song].coverUri, albumSongs[song].title, albumSongs[song].singer, true, song, albumName)
+                                albumViewModel.updateSongState(
+                                    albumSongs[song].coverUri,
+                                    albumSongs[song].title,
+                                    albumSongs[song].singer,
+                                    true,
+                                    albumSongs[song].id,
+                                    song,
+                                    albumName
+                                )
                             }
                     ) {
 

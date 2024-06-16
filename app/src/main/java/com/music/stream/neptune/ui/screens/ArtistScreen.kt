@@ -265,6 +265,7 @@ fun SumUpArtistScreen(
                                         artistSongs[0].title,
                                         artistSongs[0].singer,
                                         true,
+                                        artistSongs[0].id,
                                         0
 
                                     )
@@ -302,6 +303,7 @@ fun SumUpArtistScreen(
                                 artistSongs[song].title,
                                 artistSongs[song].singer,
                                 true,
+                                artistSongs[song].id,
                                 song
 
                             )

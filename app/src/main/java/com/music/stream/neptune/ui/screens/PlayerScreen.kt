@@ -53,6 +53,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.data.pref.addLikedSongId
+import com.music.stream.neptune.data.pref.isSongLiked
+import com.music.stream.neptune.data.pref.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
@@ -69,8 +72,9 @@ fun PlayerScreen(navController: NavController) {
     val songSinger = playerViewModel.currentSongSinger.value
     val songCoverUri = playerViewModel.currentSongCoverUri.value
     val songPlayingState = playerViewModel.currentSongPlayingState.value
+    val songId = playerViewModel.currentSongId.value
+    val context = LocalContext.current
 
-    val songDuration by remember { mutableStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
     var songProgress by remember { mutableStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
     var songDurationText by remember { mutableStateOf("0") }
     var songProgressText by remember { mutableStateOf("") }
@@ -92,7 +96,7 @@ fun PlayerScreen(navController: NavController) {
 
     //playerViewModel.updateSongState(songCoverUri, songTitle, songSinger, songPlayingState)
 
-    val context = LocalContext.current
+
 
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
@@ -188,7 +192,7 @@ fun PlayerScreen(navController: NavController) {
                 contentScale = ContentScale.Crop,
                 contentDescription = "")
             Spacer(modifier = Modifier.padding(30.dp))
-            PlayerInfo(songTitle, songSinger)
+            PlayerInfo(songTitle, songSinger, songId, context)
 
             CustomSlider(
                 value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
@@ -264,7 +268,10 @@ fun PlayerTopBar(navController: NavController) {
 }
 
 @Composable
-fun PlayerInfo(songTitle: String, songSinger: String) {
+fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Context) {
+
+
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -303,11 +310,30 @@ fun PlayerInfo(songTitle: String, songSinger: String) {
 
         Icon(
             modifier = Modifier
-                .size(26.dp),
-            painter = painterResource(id = R.drawable.ic_add),
+                .size(26.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (isSongLiked(context, songId.toString())) {
+                        removeLikedSongId(context, songId.toString())
+                    } else {
+                        addLikedSongId(context, songId.toString())
+                    }
+                },
+            painter = if (isSongLiked(context, songId.toString())){
+                painterResource(id = R.drawable.added)
+            }
+            else{
+                painterResource(id = R.drawable.ic_add)
+            }
+            ,
             tint = Color.White,
             contentDescription = "")
     }
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -435,6 +461,7 @@ fun PlayerFull(
                             playerViewModel.currentSongTitle.value,
                             playerViewModel.currentSongSinger.value,
                             false,
+                            playerViewModel.currentSongId.value,
                             playerViewModel.currentSongIndex.value,
                             playerViewModel.currentSongAlbum.value
                         )
@@ -445,6 +472,7 @@ fun PlayerFull(
                             playerViewModel.currentSongTitle.value,
                             playerViewModel.currentSongSinger.value,
                             true,
+                            playerViewModel.currentSongId.value,
                             playerViewModel.currentSongIndex.value,
                             playerViewModel.currentSongAlbum.value
                         )

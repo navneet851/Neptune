@@ -26,6 +26,9 @@ class CurrentSongState @Inject constructor() {
     private val _songIndex: MutableState<Int> = mutableStateOf(0)
     val songIndex : State<Int> get() = _songIndex
 
+    private val _songId: MutableState<Int> = mutableStateOf(0)
+    val songId : State<Int> get() = _songId
+
     val shuffle = mutableStateOf(false)
     val repeat = mutableStateOf(false)
 
@@ -36,12 +39,13 @@ class CurrentSongState @Inject constructor() {
         repeat.value = newRepeatState
     }
 
-    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songIndex : Int, album : String) {
+    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songId : Int, songIndex : Int, album : String) {
         _coverUri.value = coverUri
         _title.value = title
         _album.value = album
         _singer.value = singer
         _playingState.value = playingState
         _songIndex.value = songIndex
+        _songId.value = songId
     }
 }

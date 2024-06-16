@@ -27,6 +27,8 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
     val currentSongIndex : State<Int> get() = currentSongState.songIndex
     val currentSongAlbum : State<String> get() = currentSongState.album
 
+    val currentSongId : State<Int> get() = currentSongState.songId
+
     val shuffleState = currentSongState.shuffle
     val repeatState = currentSongState.repeat
 
@@ -52,6 +54,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
                     nextSong.title,
                     nextSong.singer,
                     true,
+                    nextSong.id,
                     (currentSongIndex.value + 1),
                     currentSongAlbum.value
                 )
@@ -63,6 +66,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
                     nextSong.title,
                     nextSong.singer,
                     true,
+                    nextSong.id,
                     0,
                     currentSongAlbum.value
                 )
@@ -75,12 +79,12 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
     fun playPreviousSong(queueSongs : List<SongsModel>, context: Context) {
         if (currentSongIndex.value > 0) {
             val previousSong = queueSongs[(currentSongIndex.value-1)]
-            updateSongState(previousSong.coverUri, previousSong.title, previousSong.singer, true, (currentSongIndex.value-1), currentSongAlbum.value)
+            updateSongState(previousSong.coverUri, previousSong.title, previousSong.singer, true, previousSong.id, (currentSongIndex.value-1), currentSongAlbum.value)
             SongPlayer.playSong(previousSong.url, context)
         }
         else{
             val previousSong = queueSongs[queueSongs.size-1]
-            updateSongState(previousSong.coverUri, previousSong.title, previousSong.singer, true, queueSongs.size-1, currentSongAlbum.value)
+            updateSongState(previousSong.coverUri, previousSong.title, previousSong.singer, true, previousSong.id, queueSongs.size-1, currentSongAlbum.value)
             SongPlayer.playSong(previousSong.url, context)
         }
 
@@ -98,8 +102,8 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
         val seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) - TimeUnit.MINUTES.toSeconds(minutes)
         return String.format("%01d:%02d", minutes, seconds)
     }
-    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songIndex : Int = 0, album : String = "") {
-        currentSongState.updateSongState(coverUri, title, singer, playingState, songIndex, album)
+    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songId : Int, songIndex : Int = 0, album : String = "") {
+        currentSongState.updateSongState(coverUri, title, singer, playingState, songId, songIndex, album)
     }
 
     fun updateShuffleState(shuffleState : Boolean){

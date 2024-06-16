@@ -152,7 +152,7 @@ fun SumUpSearchScreen(
                     ) {
                         SongPlayer.playSong(searchedList[song].url, context)
                         //navController.navigate("${Routes.Player.route}")
-                        searchViewModel.updateSongState(searchedList[song].coverUri, searchedList[song].title, searchedList[song].singer, true)
+                        searchViewModel.updateSongState(searchedList[song].coverUri, searchedList[song].title, searchedList[song].singer, true, searchedList[song].id)
                     }
                 ){
 

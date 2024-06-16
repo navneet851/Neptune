@@ -25,8 +25,8 @@ class SearchViewModel @Inject constructor(private val repository: AppRepository,
         fetchSongs()
     }
 
-    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songIndex : Int = 0, album : String = "") {
-        currentSongState.updateSongState(coverUri, title, singer, playingState, songIndex, album)
+    fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songId : Int, songIndex : Int = 0, album : String = "") {
+        currentSongState.updateSongState(coverUri, title, singer, playingState, songId, songIndex, album)
     }
 
     private fun fetchSongs() = viewModelScope.launch(Dispatchers.IO) {

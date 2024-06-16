@@ -79,11 +79,12 @@ fun MiniPlayer(navController: NavController) {
     val songSinger = miniPlayerViewModel.currentSongSinger.value
     val songCoverUri = miniPlayerViewModel.currentSongCoverUri.value
     val songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
+    val songId = miniPlayerViewModel.currentSongId.value
     val songIndex = miniPlayerViewModel.currentSongIndex.value
     val songAlbum = miniPlayerViewModel.currentSongAlbum.value
 
 
-    val songDuration by remember { mutableFloatStateOf(maxOf(0f, SongPlayer.getDuration().toFloat())) }
+
     var songProgress by remember { mutableFloatStateOf(0f) }
 
     songProgress = if (SongPlayer.getDuration() > 0) {
@@ -183,6 +184,7 @@ fun MiniPlayer(navController: NavController) {
                                 songTitle,
                                 songSinger,
                                 false,
+                                songId,
                                 songIndex,
                                 songAlbum
                             )
@@ -193,6 +195,7 @@ fun MiniPlayer(navController: NavController) {
                                 songTitle,
                                 songSinger,
                                 true,
+                                songId,
                                 songIndex,
                                 songAlbum
                             )
