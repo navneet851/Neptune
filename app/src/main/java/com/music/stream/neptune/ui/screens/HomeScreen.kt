@@ -408,7 +408,7 @@ fun ImageCard(
     modifier: Modifier = Modifier
 ) {
 
-    val albums = allAlbums.drop(1).shuffled().takeLast(3)
+    val albums = allAlbums.takeLast(3)
     Text(modifier = Modifier
         .padding(20.dp, 10.dp, 0.dp, 0.dp),
         text = "Discover",

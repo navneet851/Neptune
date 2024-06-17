@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,12 +60,18 @@ import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.data.preferences.addLikedAlbumId
+import com.music.stream.neptune.data.preferences.isAlbumLiked
+import com.music.stream.neptune.data.preferences.removeLikedAlbumId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.LikedSongsScreen
 import com.music.stream.neptune.ui.components.Loader
+import com.music.stream.neptune.ui.components.Snackbar
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -76,6 +83,9 @@ fun AlbumScreen(navController: NavController, albumName: String) {
     val albums by albumViewModel.albums.collectAsState()
 
     val context = LocalContext.current
+
+
+
 
     Log.d("check", albumName.toString())
 
@@ -133,13 +143,28 @@ fun SumUpAlbumScreen(
 //        albumName == it.album
 //    }
     val albumByName : Map<String, List<AlbumsModel>> = albums.groupBy { it.name }
-    val album : List<AlbumsModel> = albumByName[albumName]!!
+    val album : List<AlbumsModel> = albumByName[albumName]!! // current album
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
     }
     Palette().extractSecondColorFromCoverUrl(context = context, album[0].coverUri){ color ->
         dominentColor = color
     }
+
+    var isAlbumLiked by remember { mutableStateOf( isAlbumLiked(context, album[0].id.toString())) }
+
+    var snackbarMessage by remember {
+        mutableStateOf("")
+    }
+    var snackbarVisible by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(snackbarVisible) {
+        delay(1500)
+        snackbarVisible = false
+    }
+
+
     Log.d("color", dominentColor.toString())
     Scaffold(
         topBar = {
@@ -232,64 +257,98 @@ fun SumUpAlbumScreen(
                         .padding(25.dp, 0.dp)
                 ){
 
-                    Row(horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .width(75.dp)
-                    ) {
-                        GlideImage(
+                    if (snackbarVisible){
+                            Snackbar(showMessage = snackbarMessage)
+                        }
+                    else{
+                        Row(horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .height(42.dp)
-                                .width(32.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .border(2.dp, Color.Gray, RectangleShape)
-                                .padding(5.dp),
-                            model = album[0].coverUri,
-                            failure = placeholder(R.drawable.placeholder),
-                            //loading = placeholder(R.drawable.album),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "",
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .size(23.dp),
-                            painter = painterResource(id = R.drawable.ic_add),
-                            tint = Color.White,
-                            contentDescription = "")
-                    }
-
-
-                    if(!albumViewModel.currentSongPlayingState.value && albumSongs.isNotEmpty()){
-                        androidx.compose.foundation.layout.Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(52.dp)
-                                .clip(RoundedCornerShape(100.dp))
-                                .background(Color.White)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null
-                                ) {
-                                    SongPlayer.playSong(albumSongs[0].url, context)
-                                    albumViewModel.updateSongState(
-                                        albumSongs[0].coverUri,
-                                        albumSongs[0].title,
-                                        albumSongs[0].singer,
-                                        true,
-                                        albumSongs[0].id,
-                                        0,
-                                        albumName
-                                    )
-                                }
+                                .width(75.dp)
                         ) {
+                            GlideImage(
+                                modifier = Modifier
+                                    .height(42.dp)
+                                    .width(32.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .border(2.dp, Color.Gray, RectangleShape)
+                                    .padding(5.dp),
+                                model = album[0].coverUri,
+                                failure = placeholder(R.drawable.placeholder),
+                                //loading = placeholder(R.drawable.album),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "",
+                            )
                             Icon(
                                 modifier = Modifier
-                                    .size(25.dp),
-                                tint = Color.Black,
-                                painter = painterResource(id = R.drawable.play_svgrepo_com),
-                                contentDescription = "")
+                                    .size(23.dp)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        if (isAlbumLiked) {
+                                            removeLikedAlbumId(context, album[0].id.toString())
+                                            snackbarMessage = "Removed from Library"
+                                        } else {
+                                            addLikedAlbumId(context, album[0].id.toString())
+                                            snackbarMessage = "Added to Library"
+                                        }
+                                        isAlbumLiked = isAlbumLiked(context, album[0].id.toString())
+                                        snackbarVisible = true
+
+                                    },
+                                painter = if (isAlbumLiked){
+                                    painterResource(id = R.drawable.added)
+                                }
+                                else{
+                                    painterResource(id = R.drawable.ic_add)
+                                }
+                                ,
+                                tint = if (isAlbumLiked){
+                                    Color(AppPalette.toArgb())
+                                }
+                                else{
+                                    Color.White
+                                },
+                                contentDescription = ""
+                            )
+                        }
+
+
+                        if(!albumViewModel.currentSongPlayingState.value && albumSongs.isNotEmpty()){
+                            androidx.compose.foundation.layout.Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(52.dp)
+                                    .clip(RoundedCornerShape(100.dp))
+                                    .background(Color.White)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        SongPlayer.playSong(albumSongs[0].url, context)
+                                        albumViewModel.updateSongState(
+                                            albumSongs[0].coverUri,
+                                            albumSongs[0].title,
+                                            albumSongs[0].singer,
+                                            true,
+                                            albumSongs[0].id,
+                                            0,
+                                            albumName
+                                        )
+                                    }
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(25.dp),
+                                    tint = Color.Black,
+                                    painter = painterResource(id = R.drawable.play_svgrepo_com),
+                                    contentDescription = "")
+                            }
                         }
                     }
+
+
 
 
                 }

@@ -28,6 +28,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,9 @@ fun PlayerScreen(navController: NavController) {
     val songPlayingState = playerViewModel.currentSongPlayingState.value
     val songId = playerViewModel.currentSongId.value
     val context = LocalContext.current
+    val isLiked = remember {
+        mutableStateOf(isSongLiked(context, songId.toString()))
+    }
 
     var songProgress by remember { mutableStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
     var songDurationText by remember { mutableStateOf("0") }
@@ -201,7 +205,7 @@ fun PlayerScreen(navController: NavController) {
                     .height(300.dp)
                     .padding(0.dp, 0.dp, 0.dp, 50.dp)
             ){
-                PlayerInfo(songTitle, songSinger, songId, context)
+                PlayerInfo(songTitle, songSinger, songId, context, isLiked)
 
                 CustomSlider(
                     value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
@@ -244,7 +248,7 @@ fun PlayerScreen(navController: NavController) {
 
 
                 Spacer(modifier = Modifier.padding(5.dp))
-                PlayerFull(songPlayingState, playerViewModel, context, shuffle, repeat, queueSongs)
+                PlayerFull(songPlayingState, playerViewModel, context, isLiked, shuffle, repeat, queueSongs)
             }
 
             //PlayerEndInfo()
@@ -271,7 +275,7 @@ fun PlayerTopBar(navController: NavController) {
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                       navController.popBackStack()
+                       navController.navigateUp()
             },
             painter = painterResource(id = R.drawable.ic_down),
             tint = Color.White,
@@ -291,7 +295,13 @@ fun PlayerTopBar(navController: NavController) {
 }
 
 @Composable
-fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Context) {
+fun PlayerInfo(
+    songTitle: String,
+    songSinger: String,
+    songId: Int,
+    context: Context,
+    isLiked: MutableState<Boolean>
+) {
 
     var snackbarMessage by remember {
         mutableStateOf("")
@@ -305,9 +315,6 @@ fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Cont
         snackbarVisible = false
     }
 
-    var isLiked by remember {
-        mutableStateOf(isSongLiked(context, songId.toString()))
-    }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -356,7 +363,7 @@ fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Cont
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    if (isLiked) {
+                    if (isLiked.value) {
                         removeLikedSongId(context, songId.toString())
                         snackbarMessage = "Removed from Liked Songs"
                     } else {
@@ -364,16 +371,16 @@ fun PlayerInfo(songTitle: String, songSinger: String, songId: Int, context: Cont
                         snackbarMessage = "Added to Liked Songs"
                     }
                     snackbarVisible = true
-                    isLiked = isSongLiked(context, songId.toString())
+                    isLiked.value = isSongLiked(context, songId.toString())
                 },
-            painter = if (isLiked){
+            painter = if (isLiked.value){
                 painterResource(id = R.drawable.added)
             }
             else{
                 painterResource(id = R.drawable.ic_add)
             }
             ,
-            tint = if (isLiked){
+            tint = if (isLiked.value){
                 Color(AppPalette.toArgb())
             }
             else{
@@ -444,6 +451,7 @@ fun PlayerFull(
     songPlayingState: Boolean,
     playerViewModel: PlayerViewModel,
     context: Context,
+    isLiked: MutableState<Boolean>,
     shuffle: Boolean,
     repeat: Boolean,
     queueSongs: List<SongsModel>
@@ -495,6 +503,7 @@ fun PlayerFull(
 
                         playerViewModel.playPreviousSong(queueSongs, context)
                     }
+                    isLiked.value = isSongLiked(context, playerViewModel.currentSongId.value.toString())
                 }
             ,
             tint = Color.White,
@@ -560,6 +569,7 @@ fun PlayerFull(
                     } else {
                         playerViewModel.playNextSongs(queueSongs, context)
                     }
+                    isLiked.value = isSongLiked(context, playerViewModel.currentSongId.value.toString())
                 }
             ,
             tint = Color.White,
@@ -577,6 +587,7 @@ fun PlayerFull(
                     } else {
                         playerViewModel.updateRepeatState(true)
                     }
+
 
                 }
             ,

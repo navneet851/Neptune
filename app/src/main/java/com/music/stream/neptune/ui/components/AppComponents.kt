@@ -1,6 +1,5 @@
 package com.music.stream.neptune.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -47,10 +46,14 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
+import com.music.stream.neptune.data.preferences.addLikedSongId
+import com.music.stream.neptune.data.preferences.isSongLiked
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 import kotlinx.coroutines.delay
@@ -93,6 +96,7 @@ fun MiniPlayer(navController: NavController) {
         0f
     }
 
+
     LaunchedEffect(key1  = songPlayingState) {
             while (songPlayingState) {
                 songProgress = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat()
@@ -113,7 +117,13 @@ fun MiniPlayer(navController: NavController) {
     Palette().extractFirstColorFromImageUrl(context = context, songCoverUri){ color ->
         darkVibrantColor = color
     }
-    Log.d("checkplayermini", songTitle)
+
+    var isLiked by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(songId) {
+        isLiked = isSongLiked(context, songId.toString())
+    }
 
     Column(
         modifier = Modifier
@@ -142,7 +152,7 @@ fun MiniPlayer(navController: NavController) {
             Row(horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .width(280.dp)
+                    .width(260.dp).clipToBounds()
             ) {
                 GlideImage(
                     modifier = Modifier
@@ -162,46 +172,87 @@ fun MiniPlayer(navController: NavController) {
                 }
             }
 
-            Icon(
-                painter = if (songPlayingState)
-                    painterResource(id = R.drawable.ic_playing)
-                else
-                    painterResource(id = R.drawable.play_svgrepo_com)
-                ,
-                contentDescription = "",
-                tint = Color.White,
-                modifier = Modifier
-                    .size(45.dp)
-                    .padding(9.dp, 0.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        if (songPlayingState) {
-                            SongPlayer.pause()
-                            miniPlayerViewModel.updateSongState(
-                                songCoverUri,
-                                songTitle,
-                                songSinger,
-                                false,
-                                songId,
-                                songIndex,
-                                songAlbum
-                            )
-                        } else {
-                            SongPlayer.play()
-                            miniPlayerViewModel.updateSongState(
-                                songCoverUri,
-                                songTitle,
-                                songSinger,
-                                true,
-                                songId,
-                                songIndex,
-                                songAlbum
-                            )
-                        }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.width(70.dp)
+            ) {
+
+                Icon(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (isLiked) {
+                                removeLikedSongId(context, songId.toString())
+                            } else {
+                                addLikedSongId(context, songId.toString())
+                            }
+                            isLiked = isSongLiked(context, songId.toString())
+
+                        },
+                    painter = if (isLiked){
+                        painterResource(id = R.drawable.added)
                     }
-            )
+                    else{
+                        painterResource(id = R.drawable.ic_add)
+                    }
+                    ,
+                    tint = if (isLiked){
+                        Color(AppPalette.toArgb())
+                    }
+                    else{
+                        Color.White
+                    },
+                    contentDescription = ""
+                )
+
+
+                Icon(
+                    painter = if (songPlayingState)
+                        painterResource(id = R.drawable.ic_playing)
+                    else
+                        painterResource(id = R.drawable.play_svgrepo_com)
+                    ,
+                    contentDescription = "",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .padding(5.dp, 0.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (songPlayingState) {
+                                SongPlayer.pause()
+                                miniPlayerViewModel.updateSongState(
+                                    songCoverUri,
+                                    songTitle,
+                                    songSinger,
+                                    false,
+                                    songId,
+                                    songIndex,
+                                    songAlbum
+                                )
+                            } else {
+                                SongPlayer.play()
+                                miniPlayerViewModel.updateSongState(
+                                    songCoverUri,
+                                    songTitle,
+                                    songSinger,
+                                    true,
+                                    songId,
+                                    songIndex,
+                                    songAlbum
+                                )
+                            }
+                        }
+                )
+            }
+
+
         }
 
 

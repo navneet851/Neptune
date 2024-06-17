@@ -3,7 +3,6 @@ package com.music.stream.neptune.ui.components
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -73,7 +71,9 @@ fun LikedSongsScreen(
     val albumViewModel : AlbumViewModel =  hiltViewModel()
     val likesSongIds = getLikedSongIds(context)
     val album = albums.filter { it.name == "Liked Songs" }
-    val likedSongs = getSongsByIds(likesSongIds, songs)
+    var likedSongs = getSongsByIds(likesSongIds, songs)
+
+    likedSongs = likedSongs.sortedBy { it.title }
 
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
@@ -88,8 +88,11 @@ fun LikedSongsScreen(
                 modifier = Modifier.padding(16.dp, 0.dp),
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable {
-                            navController.popBackStack()
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            navController.navigateUp()
                         },
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "",
@@ -116,7 +119,7 @@ fun LikedSongsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(460.dp)
+                    .height(380.dp)
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(dominentColor, Color(AppBackground.toArgb())),
@@ -136,7 +139,7 @@ fun LikedSongsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     GlideImage(
-                        modifier = Modifier.size(230.dp),
+                        modifier = Modifier.size(180.dp),
                         model = album[0].coverUri,
                         failure = placeholder(R.drawable.placeholder),
                         //loading = placeholder(R.drawable.album),
@@ -144,47 +147,32 @@ fun LikedSongsScreen(
                         contentDescription = "",
                     )
                 }
-                Spacer(modifier = Modifier.padding(5.dp))
-                Text(modifier = Modifier
-                    .padding(20.dp, 10.dp),
-                    text = "Liked Songs",
-                    color = Color.White,
-                    fontSize = 23.sp,
-                    fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.padding(20.dp))
+
 
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
                         .padding(25.dp, 0.dp)
                 ){
 
-                    Row(horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
                         modifier = Modifier
-                            .width(75.dp)
+                            .width(200.dp)
                     ) {
-                        GlideImage(
-                            modifier = Modifier
-                                .height(42.dp)
-                                .width(32.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .border(2.dp, Color.Gray, RectangleShape)
-                                .padding(5.dp),
-                            model = album[0].coverUri,
-                            failure = placeholder(R.drawable.placeholder),
-                            //loading = placeholder(R.drawable.album),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "",
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .size(23.dp),
-                            painter = painterResource(id = R.drawable.ic_add),
-                            tint = Color.White,
-                            contentDescription = "")
+                        Text(modifier = Modifier,
+                            text = "Liked Songs",
+                            color = Color.White,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold)
+                        Text(modifier = Modifier,
+                            text = " ${likedSongs.size} songs",
+                            color = Color.Gray,
+                            letterSpacing = 0.sp,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium)
                     }
 
 

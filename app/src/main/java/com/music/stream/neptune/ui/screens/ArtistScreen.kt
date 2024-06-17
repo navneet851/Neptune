@@ -3,7 +3,6 @@ package com.music.stream.neptune.ui.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -113,8 +111,12 @@ fun SumUpArtistScreen(
     artistName: String
 ) {
 
-    val artistSongs = songs.filter {
-        artistName == it.singer
+    var artistSongs = songs.filter {
+        it.singer.lowercase().contains(artistName.lowercase())
+    }
+
+    artistSongs = artistSongs.sortedBy {
+        it.title
     }
     val artist = artists.filter{
         artistName == it.name
@@ -191,61 +193,32 @@ fun SumUpArtistScreen(
                         contentDescription = "",
                     )
                 }
-                Spacer(modifier = Modifier.padding(5.dp))
-                Text(modifier = Modifier
-                    .padding(20.dp, 5.dp, 0.dp, 0.dp),
-                    text = artistName,
-                    color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium)
+                Spacer(modifier = Modifier.padding(20.dp))
 
-                Text(modifier = Modifier
-                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
-                    text = "Made for You",
-                    color = Color.Gray,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium)
-//                Text(modifier = Modifier
-//                    .padding(20.dp, 0.dp, 0.dp, 0.dp),
-//                    text = "Album : ${artist[0].time}",
-//                    color = Color.Gray,
-//                    fontSize = 11.sp,
-//                    fontWeight = FontWeight.Medium
-//                )
+
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
-                        .padding(20.dp, 0.dp)
+                        .padding(25.dp, 0.dp)
                 ){
 
-                    Row(horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
                         modifier = Modifier
-                            .width(75.dp)
+                            .width(200.dp)
                     ) {
-                        GlideImage(
-                            modifier = Modifier
-                                .height(42.dp)
-                                .width(32.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .border(2.dp, Color.Gray, RectangleShape)
-                                .padding(5.dp),
-                            model = artist[0].coverUri,
-                            failure = placeholder(R.drawable.placeholder),
-                            //loading = placeholder(R.drawable.album),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "",
-                        )
-
-                        Icon(
-                            modifier = Modifier
-                                .size(23.dp),
-                            painter = painterResource(id = R.drawable.ic_add),
-                            tint = Color.White,
-                            contentDescription = "")
+                        Text(modifier = Modifier,
+                            text = artistName,
+                            color = Color.White,
+                            fontSize = 23.sp,
+                            fontWeight = FontWeight.Bold)
+                        Text(modifier = Modifier,
+                            text = "Made For You",
+                            color = Color.Gray,
+                            letterSpacing = 0.sp,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium)
                     }
 
                     if(!artistViewModel.currentSongPlayingState.value && artistSongs.isNotEmpty()){

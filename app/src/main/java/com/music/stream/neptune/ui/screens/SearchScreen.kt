@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -151,7 +152,13 @@ fun SumUpSearchScreen(
                     ) {
                         SongPlayer.playSong(searchedList[song].url, context)
                         //navController.navigate("${Routes.Player.route}")
-                        searchViewModel.updateSongState(searchedList[song].coverUri, searchedList[song].title, searchedList[song].singer, true, searchedList[song].id)
+                        searchViewModel.updateSongState(
+                            searchedList[song].coverUri,
+                            searchedList[song].title,
+                            searchedList[song].singer,
+                            true,
+                            searchedList[song].id
+                        )
                     }
                 ){
 
@@ -180,6 +187,11 @@ fun SumUpSearchScreen(
                 Icon(imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = "")
             }
         }
+
+        item{
+            Spacer(modifier = Modifier.height(130.dp))
+        }
+
     }
 }
 
