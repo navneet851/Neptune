@@ -56,7 +56,7 @@ fun MyNavHost(
                 bottomBarState.value = true
                 bottomBarPlayerState.value = playerState != ""
             }
-            LibraryScreen()
+            LibraryScreen(navHostController)
         }
         composable(Routes.Player.route){
             LaunchedEffect(playerState) {

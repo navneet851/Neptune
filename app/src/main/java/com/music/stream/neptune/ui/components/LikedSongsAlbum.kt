@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,11 +70,11 @@ fun LikedSongsScreen(
     context: Context
 ) {
     val albumViewModel : AlbumViewModel =  hiltViewModel()
+    val likeState = albumViewModel.likeState.value
+
     val likesSongIds = getLikedSongIds(context)
     val album = albums.filter { it.name == "Liked Songs" }
-    var likedSongs = getSongsByIds(likesSongIds, songs)
-
-    likedSongs = likedSongs.sortedBy { it.title }
+    var likedSongs  by remember { mutableStateOf(emptyList<SongsModel>()) }
 
     var dominentColor by remember {
         mutableStateOf(Color(AppBackground.toArgb()))
@@ -81,6 +82,11 @@ fun LikedSongsScreen(
     Palette().extractSecondColorFromCoverUrl(context = context, album[0].coverUri){ color ->
         dominentColor = color
     }
+
+    LaunchedEffect(likeState) {
+        likedSongs = getSongsByIds(likesSongIds, songs).sortedBy { it.title }
+    }
+
 
     Scaffold(
         topBar = {

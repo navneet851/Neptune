@@ -138,7 +138,7 @@ fun SumUpArtistScreen(
                 navigationIcon = {
                     Icon(
                         modifier = Modifier.clickable {
-                            navController.navigate("home")
+                            navController.navigateUp()
                         },
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "",

@@ -31,6 +31,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
 
     val shuffleState = currentSongState.shuffle
     val repeatState = currentSongState.repeat
+    val likeState = currentSongState.likeState
 
 
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
@@ -111,5 +112,8 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
     }
     fun updateRepeatState(repeatState : Boolean){
         currentSongState.updateRepeatState(repeatState)
+    }
+    fun updateLikeState(likeState : Boolean){
+        currentSongState.updateLikeState(likeState)
     }
 }

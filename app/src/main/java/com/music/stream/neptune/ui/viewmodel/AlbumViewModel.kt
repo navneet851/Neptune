@@ -31,6 +31,8 @@ class AlbumViewModel @Inject constructor(private val repository: AppRepository, 
         currentSongState.updateSongState(coverUri, title, singer, playingState, songId, songIndex, album)
     }
 
+    val likeState = currentSongState.likeState
+
     init {
         fetchAlbums()
         fetchSongs()

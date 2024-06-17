@@ -2,6 +2,8 @@ package com.music.stream.neptune.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +25,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.music.stream.neptune.data.api.Response
@@ -41,13 +45,14 @@ import com.music.stream.neptune.data.preferences.getAlbumsByIds
 import com.music.stream.neptune.data.preferences.getLikedAlbumIds
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.components.Snackbar
+import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
 import com.music.stream.neptune.ui.viewmodel.HomeViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LibraryScreen(modifier: Modifier = Modifier) {
+fun LibraryScreen(navController: NavController) {
 
 
 
@@ -81,7 +86,7 @@ fun LibraryScreen(modifier: Modifier = Modifier) {
             is Response.Success -> {
                 val albumsResponse = (albums as Response.Success).data
 
-                SumUpLibraryScreen(padding, albumsResponse)
+                SumUpLibraryScreen(padding, albumsResponse, navController)
             }
 
             is Response.Error -> {
@@ -104,7 +109,11 @@ fun LibraryScreen(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun SumUpLibraryScreen(padding: PaddingValues, albums: List<AlbumsModel>) {
+fun SumUpLibraryScreen(
+    padding: PaddingValues,
+    albums: List<AlbumsModel>,
+    navController: NavController
+) {
 
         Column(modifier = Modifier
             .fillMaxSize()
@@ -132,10 +141,16 @@ fun SumUpLibraryScreen(padding: PaddingValues, albums: List<AlbumsModel>) {
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp, 10.dp)
+                                .padding(20.dp, 6.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    navController.navigate("${Routes.Album.route}/${libraryAlbums[album].name}")
+                                }
                         ){
                             GlideImage(modifier = Modifier
-                                .size(57.dp),
+                                .size(55.dp),
                                 model = libraryAlbums[album].coverUri,
                                 contentScale = ContentScale.Crop,
                                 contentDescription = "")

@@ -86,6 +86,7 @@ fun MiniPlayer(navController: NavController) {
     val songIndex = miniPlayerViewModel.currentSongIndex.value
     val songAlbum = miniPlayerViewModel.currentSongAlbum.value
 
+    val likeState = miniPlayerViewModel.likeState.value
 
 
     var songProgress by remember { mutableFloatStateOf(0f) }
@@ -191,6 +192,7 @@ fun MiniPlayer(navController: NavController) {
                                 addLikedSongId(context, songId.toString())
                             }
                             isLiked = isSongLiked(context, songId.toString())
+                            miniPlayerViewModel.updateLikeState(!likeState)
 
                         },
                     painter = if (isLiked){

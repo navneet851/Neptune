@@ -31,12 +31,16 @@ class CurrentSongState @Inject constructor() {
 
     val shuffle = mutableStateOf(false)
     val repeat = mutableStateOf(false)
-
+    val likeState = mutableStateOf(false)
     fun updateShuffleState(newShuffleState: Boolean) {
         shuffle.value = newShuffleState
     }
     fun updateRepeatState(newRepeatState : Boolean){
         repeat.value = newRepeatState
+    }
+
+    fun updateLikeState(newLikeState : Boolean){
+        likeState.value = newLikeState
     }
 
     fun updateSongState(coverUri: String, title: String, singer: String, playingState: Boolean, songId : Int, songIndex : Int, album : String) {

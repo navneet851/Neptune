@@ -55,6 +55,8 @@ import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.data.preferences.addLikedSongId
+import com.music.stream.neptune.data.preferences.getLikedSongIds
+import com.music.stream.neptune.data.preferences.getSongsByIds
 import com.music.stream.neptune.data.preferences.isSongLiked
 import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
@@ -119,17 +121,26 @@ fun PlayerScreen(navController: NavController) {
         emptyList<SongsModel>()
     }
 
+    var queueSongs : List<SongsModel> = emptyList()
 
-
-    val queueSongs = songs.filter {
-        if (playerViewModel.currentSongAlbum.value != ""){
-            playerViewModel.currentSongAlbum.value == it.album
+    if (playerViewModel.currentSongAlbum.value == "Liked Songs"){
+        val likesSongIds = getLikedSongIds(context)
+        queueSongs = getSongsByIds(likesSongIds, songs).sortedBy {
+            it.title
         }
-        else{
-            playerViewModel.currentSongSinger.value == it.singer
-        }
-
     }
+    else{
+        queueSongs = songs.filter {
+            if (playerViewModel.currentSongAlbum.value != ""){
+                playerViewModel.currentSongAlbum.value == it.album
+            }
+            else{
+                playerViewModel.currentSongSinger.value == it.singer
+            }
+        }
+    }
+
+
 
     if((songProgressText != "0:00") && (songDurationText == songProgressText)){
         if(repeat){
