@@ -21,6 +21,8 @@ class AlbumViewModel @Inject constructor(private val repository: AppRepository, 
 
     val currentSongPlayingState: State<Boolean> get() = currentSongState.playingState
 
+    val currentSongId: State<Int> get() = currentSongState.songId
+
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
     val songs : StateFlow<Response<List<SongsModel>>> = _songs
 

@@ -63,6 +63,7 @@ import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.ArtistViewModel
 
 
@@ -274,6 +275,9 @@ fun SumUpArtistScreen(
                     isLiked = isSongLiked(context, artistSongs[song].id.toString())
                 }
                 val songId = artistSongs[song].id
+                val currentPlayingIndicatorColor = if(songId == artistViewModel.currentSongId.value) Color(AppPalette.toArgb()) else Color.White
+
+
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -316,7 +320,7 @@ fun SumUpArtistScreen(
                         Column {
                             Text(
                                 text = artistSongs[song].title,
-                                color = Color.White,
+                                color = currentPlayingIndicatorColor,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium
                             )

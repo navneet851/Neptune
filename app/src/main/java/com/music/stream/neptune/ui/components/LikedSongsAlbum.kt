@@ -60,6 +60,7 @@ import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.AlbumViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -74,8 +75,8 @@ fun LikedSongsScreen(
     val albumViewModel : AlbumViewModel =  hiltViewModel()
 
 
-    val likesSongIds = getLikedSongIds(context)
     val album = albums.filter { it.name == "Liked Songs" }
+    val likesSongIds = getLikedSongIds(context)
     var likedSongs  by remember { mutableStateOf(emptyList<SongsModel>()) }
 
     var dominentColor by remember {
@@ -230,6 +231,9 @@ fun LikedSongsScreen(
                         mutableStateOf(isSongLiked(context, likedSongs[song].id.toString()))
                     }
                     val songId = likedSongs[song].id
+                    val currentPlayingIndicatorColor = if(songId == albumViewModel.currentSongId.value) Color(
+                        AppPalette.toArgb()) else Color.White
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -271,7 +275,7 @@ fun LikedSongsScreen(
                             Column {
                                 Text(
                                     text = likedSongs[song].title,
-                                    color = Color.White,
+                                    color = currentPlayingIndicatorColor,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium
                                 )

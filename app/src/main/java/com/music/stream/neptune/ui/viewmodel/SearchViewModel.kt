@@ -1,5 +1,6 @@
 package com.music.stream.neptune.ui.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.stream.neptune.data.api.Response
@@ -20,6 +21,9 @@ class SearchViewModel @Inject constructor(private val repository: AppRepository,
     val songs : StateFlow<Response<List<SongsModel>>> = _songs
 
     val likeState = currentSongState.likeState
+
+    val currentSongId: State<Int> get() = currentSongState.songId
+
 
     fun updateLikeState(likeState : Boolean){
         currentSongState.updateLikeState(likeState)

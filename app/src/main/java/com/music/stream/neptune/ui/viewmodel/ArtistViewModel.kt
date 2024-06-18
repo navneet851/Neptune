@@ -19,6 +19,8 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(private val repository: AppRepository, private val currentSongState: CurrentSongState) : ViewModel() {
 
     val currentSongPlayingState: State<Boolean> get() = currentSongState.playingState
+    val currentSongId: State<Int> get() = currentSongState.songId
+
 
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
     val songs : StateFlow<Response<List<SongsModel>>> = _songs

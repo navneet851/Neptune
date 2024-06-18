@@ -81,6 +81,7 @@ fun PlayerScreen(navController: NavController) {
         mutableStateOf(isSongLiked(context, songId.toString()))
     }
 
+
     var songProgress by remember { mutableStateOf(maxOf(0f, SongPlayer.getCurrentPosition().toFloat())) }
     var songDurationText by remember { mutableStateOf("0") }
     var songProgressText by remember { mutableStateOf("") }

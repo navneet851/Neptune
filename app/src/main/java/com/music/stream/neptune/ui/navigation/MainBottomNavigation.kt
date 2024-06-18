@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.music.stream.neptune.ui.components.MiniPlayer
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +42,7 @@ class NoRippleInteractionSource : MutableInteractionSource {
 }
 
 @Composable
-fun MainBottomNavigation(navController: NavController, bottomBarState: MutableState<Boolean>, bottomBarPlayerState : MutableState<Boolean>) {
+fun MainBottomNavigation(navController: NavHostController, bottomBarState: MutableState<Boolean>, bottomBarPlayerState : MutableState<Boolean>) {
 
     val navItems = listOf(
         Routes.Home,

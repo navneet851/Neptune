@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -75,12 +75,12 @@ fun Loader() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MiniPlayer(navController: NavController) {
+fun MiniPlayer(navController: NavHostController) {
     val miniPlayerViewModel : PlayerViewModel = hiltViewModel()
     val songTitle = miniPlayerViewModel.currentSongTitle.value
     val songSinger = miniPlayerViewModel.currentSongSinger.value
     val songCoverUri = miniPlayerViewModel.currentSongCoverUri.value
-    val songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
+    var songPlayingState = miniPlayerViewModel.currentSongPlayingState.value
     val songId = miniPlayerViewModel.currentSongId.value
     val songIndex = miniPlayerViewModel.currentSongIndex.value
     val songAlbum = miniPlayerViewModel.currentSongAlbum.value
@@ -94,16 +94,19 @@ fun MiniPlayer(navController: NavController) {
         0f
     }
 
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+
+
 
     LaunchedEffect(key1  = songPlayingState) {
             while (songPlayingState) {
                 songProgress = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat()
                 delay(300L) // update every .00 second
 
-                if (SongPlayer.getCurrentPosition().toFloat() > 0f && SongPlayer.getCurrentPosition() >= SongPlayer.getDuration()) {
+                if (songProgress > 0f && songProgress >= 1f && currentRoute != Routes.Player.route) {
                     navController.navigate(Routes.Player.route)
+                    songPlayingState = false
                 }
-
         }
     }
 
@@ -152,7 +155,8 @@ fun MiniPlayer(navController: NavController) {
             Row(horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .width(260.dp).clipToBounds()
+                    .width(260.dp)
+                    .clipToBounds()
             ) {
                 GlideImage(
                     modifier = Modifier

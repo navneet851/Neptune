@@ -258,7 +258,7 @@ fun SumUpAlbumScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp)
-                        .padding(25.dp, 0.dp)
+                        .padding(20.dp, 0.dp)
                 ){
 
                     if (snackbarVisible){
@@ -273,10 +273,10 @@ fun SumUpAlbumScreen(
 
                             GlideImage(
                                 modifier = Modifier
-                                    .height(55.dp)
-                                    .width(41.dp)
-                                    .padding(5.dp)
-                                    .clip(RoundedCornerShape(4.dp))
+                                    .height(60.dp)
+                                    .width(32.dp)
+                                    .padding(0.dp, 5.dp)
+                                    .clip(RoundedCornerShape(5.dp))
                                 ,
                                 model = album[0].coverUri,
                                 failure = placeholder(R.drawable.placeholder),
@@ -374,6 +374,9 @@ fun SumUpAlbumScreen(
                         isLiked = isSongLiked(context, albumSongs[song].id.toString())
                     }
                     val songId = albumSongs[song].id
+
+                    val currentPlayingIndicatorColor = if(songId == albumViewModel.currentSongId.value) Color(AppPalette.toArgb()) else Color.White
+
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -411,7 +414,7 @@ fun SumUpAlbumScreen(
                             Column {
                                 Text(
                                     text = albumSongs[song].title,
-                                    color = Color.White,
+                                    color = currentPlayingIndicatorColor,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium
                                 )

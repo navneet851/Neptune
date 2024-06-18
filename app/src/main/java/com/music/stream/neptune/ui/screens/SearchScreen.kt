@@ -60,6 +60,7 @@ import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
+import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.viewmodel.SearchViewModel
 
 
@@ -120,7 +121,7 @@ fun SumUpSearchScreen(
         }
         else -> {
             searchedList = songs.filter {
-                it.title.lowercase().contains(text.lowercase())
+                it.title.lowercase().contains(text.lowercase()) || it.singer.lowercase().contains(text.lowercase())
             }
             times = searchedList.size
         }
@@ -152,6 +153,10 @@ fun SumUpSearchScreen(
                 isLiked = isSongLiked(context, searchedList[song].id.toString())
             }
             val songId = searchedList[song].id
+            val currentPlayingIndicatorColor = if(songId == searchViewModel.currentSongId.value) Color(
+                AppPalette.toArgb()) else Color.White
+
+
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -190,7 +195,7 @@ fun SumUpSearchScreen(
                         contentDescription = ""
                     )
                     Column {
-                        Text(text = searchedList[song].title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium )
+                        Text(text = searchedList[song].title, color = currentPlayingIndicatorColor, fontSize = 14.sp, fontWeight = FontWeight.Medium )
                         Text(text = searchedList[song].singer, color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
                 }

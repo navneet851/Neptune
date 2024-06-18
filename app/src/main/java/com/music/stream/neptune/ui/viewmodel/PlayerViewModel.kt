@@ -29,6 +29,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
 
     val currentSongId : State<Int> get() = currentSongState.songId
 
+
     val shuffleState = currentSongState.shuffle
     val repeatState = currentSongState.repeat
     val likeState = currentSongState.likeState
@@ -42,6 +43,8 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
     init {
         fetchSongs()
     }
+
+
     //val songsResponse = (songs.value as Response.Success).data
 
     // Function to play the next song in the album
