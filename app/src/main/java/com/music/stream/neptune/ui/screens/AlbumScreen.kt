@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -61,8 +58,11 @@ import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
 import com.music.stream.neptune.data.preferences.addLikedAlbumId
+import com.music.stream.neptune.data.preferences.addLikedSongId
 import com.music.stream.neptune.data.preferences.isAlbumLiked
+import com.music.stream.neptune.data.preferences.isSongLiked
 import com.music.stream.neptune.data.preferences.removeLikedAlbumId
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.LikedSongsScreen
@@ -165,6 +165,7 @@ fun SumUpAlbumScreen(
     }
 
 
+
     Log.d("color", dominentColor.toString())
     Scaffold(
         topBar = {
@@ -172,7 +173,10 @@ fun SumUpAlbumScreen(
                 modifier = Modifier.padding(16.dp, 0.dp),
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
                             navController.navigateUp()
                         },
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -266,13 +270,14 @@ fun SumUpAlbumScreen(
                             modifier = Modifier
                                 .width(75.dp)
                         ) {
+
                             GlideImage(
                                 modifier = Modifier
-                                    .height(42.dp)
-                                    .width(32.dp)
+                                    .height(55.dp)
+                                    .width(41.dp)
+                                    .padding(5.dp)
                                     .clip(RoundedCornerShape(4.dp))
-                                    .border(2.dp, Color.Gray, RectangleShape)
-                                    .padding(5.dp),
+                                ,
                                 model = album[0].coverUri,
                                 failure = placeholder(R.drawable.placeholder),
                                 //loading = placeholder(R.drawable.album),
@@ -359,6 +364,16 @@ fun SumUpAlbumScreen(
 
             if(albumSongs.isNotEmpty()){
                 repeat(albumSongs.size) {song ->
+
+
+                    var isLiked by remember {
+                        mutableStateOf(isSongLiked(context, albumSongs[song].id.toString()))
+                    }
+                    val likeState = albumViewModel.likeState.value
+                    LaunchedEffect(likeState){
+                        isLiked = isSongLiked(context, albumSongs[song].id.toString())
+                    }
+                    val songId = albumSongs[song].id
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -410,7 +425,34 @@ fun SumUpAlbumScreen(
                         }
 
                         Icon(
-                            imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = ""
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    if (isLiked) {
+                                        removeLikedSongId(context, songId.toString())
+                                    } else {
+                                        addLikedSongId(context, songId.toString())
+                                    }
+                                    isLiked = isSongLiked(context, songId.toString())
+                                    albumViewModel.updateLikeState(!albumViewModel.likeState.value)
+
+                                },
+                            painter = if (isLiked){
+                                painterResource(id = R.drawable.added)
+                            }
+                            else{
+                                painterResource(id = R.drawable.ic_add)
+                            }
+                            ,
+                            tint = if (isLiked){
+                                Color.White
+                            }else{
+                                Color.Gray
+                            },
+                            contentDescription = ""
                         )
                     }
                 }

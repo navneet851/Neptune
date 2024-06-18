@@ -30,6 +30,12 @@ class ArtistViewModel @Inject constructor(private val repository: AppRepository,
         currentSongState.updateSongState(coverUri, title, singer, playingState, songId, songIndex, album)
     }
 
+    val likeState = currentSongState.likeState
+
+    fun updateLikeState(likeState : Boolean){
+        currentSongState.updateLikeState(likeState)
+    }
+
     init {
         fetchArtists()
         fetchSongs()

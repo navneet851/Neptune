@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,8 +52,11 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.entity.AlbumsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.data.preferences.addLikedSongId
 import com.music.stream.neptune.data.preferences.getLikedSongIds
 import com.music.stream.neptune.data.preferences.getSongsByIds
+import com.music.stream.neptune.data.preferences.isSongLiked
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.theme.AppBackground
@@ -70,7 +72,7 @@ fun LikedSongsScreen(
     context: Context
 ) {
     val albumViewModel : AlbumViewModel =  hiltViewModel()
-    val likeState = albumViewModel.likeState.value
+
 
     val likesSongIds = getLikedSongIds(context)
     val album = albums.filter { it.name == "Liked Songs" }
@@ -82,7 +84,7 @@ fun LikedSongsScreen(
     Palette().extractSecondColorFromCoverUrl(context = context, album[0].coverUri){ color ->
         dominentColor = color
     }
-
+    val likeState = albumViewModel.likeState.value
     LaunchedEffect(likeState) {
         likedSongs = getSongsByIds(likesSongIds, songs).sortedBy { it.title }
     }
@@ -223,6 +225,11 @@ fun LikedSongsScreen(
 
             if(likedSongs.isNotEmpty()){
                 repeat(likedSongs.size) {song ->
+
+                    var isLiked by remember {
+                        mutableStateOf(isSongLiked(context, likedSongs[song].id.toString()))
+                    }
+                    val songId = likedSongs[song].id
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -278,7 +285,30 @@ fun LikedSongsScreen(
                         }
 
                         Icon(
-                            imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = ""
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    if (isLiked) {
+                                        removeLikedSongId(context, songId.toString())
+                                    } else {
+                                        addLikedSongId(context, songId.toString())
+                                    }
+                                    //isLiked = isSongLiked(context, songId.toString())
+                                    albumViewModel.updateLikeState(!albumViewModel.likeState.value)
+
+                                },
+                            painter = if (isLiked){
+                                painterResource(id = R.drawable.added)
+                            }
+                            else{
+                                painterResource(id = R.drawable.ic_add)
+                            }
+                            ,
+                            tint = Color.LightGray,
+                            contentDescription = ""
                         )
                     }
                 }

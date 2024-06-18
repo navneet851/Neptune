@@ -33,6 +33,9 @@ class AlbumViewModel @Inject constructor(private val repository: AppRepository, 
 
     val likeState = currentSongState.likeState
 
+    fun updateLikeState(likeState : Boolean){
+        currentSongState.updateLikeState(likeState)
+    }
     init {
         fetchAlbums()
         fetchSongs()

@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -29,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +54,9 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.data.preferences.addLikedSongId
+import com.music.stream.neptune.data.preferences.isSongLiked
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
 import com.music.stream.neptune.ui.theme.AppBackground
@@ -83,7 +85,7 @@ fun SearchScreen(navController: NavController) {
             is Response.Success -> {
                 val songsResponse = (songs as Response.Success).data
                 Log.d("homeMain", "Success-search-songs. ${songsResponse.toString()}")
-                SumUpSearchScreen(navController = navController, songsResponse.shuffled(), searchViewModel)
+                SumUpSearchScreen(navController = navController, songsResponse.sortedBy { it.title }, searchViewModel)
             }
 
             is Response.Error -> {
@@ -141,6 +143,15 @@ fun SumUpSearchScreen(
         }
 
         items(times){ song ->
+
+            var isLiked by remember {
+                mutableStateOf(isSongLiked(context, searchedList[song].id.toString()))
+            }
+            val likeState = searchViewModel.likeState.value
+            LaunchedEffect(likeState){
+                isLiked = isSongLiked(context, searchedList[song].id.toString())
+            }
+            val songId = searchedList[song].id
             Row(horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -184,7 +195,36 @@ fun SumUpSearchScreen(
                     }
                 }
 
-                Icon(imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = "")
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            if (isLiked) {
+                                removeLikedSongId(context, songId.toString())
+                            } else {
+                                addLikedSongId(context, songId.toString())
+                            }
+                            isLiked = isSongLiked(context, songId.toString())
+                            searchViewModel.updateLikeState(!searchViewModel.likeState.value)
+
+                        },
+                    painter = if (isLiked){
+                        painterResource(id = R.drawable.added)
+                    }
+                    else{
+                        painterResource(id = R.drawable.ic_add)
+                    }
+                    ,
+                    tint = if (isLiked){
+                        Color.White
+                    }else{
+                        Color.Gray
+                    },
+                    contentDescription = ""
+                )
             }
         }
 

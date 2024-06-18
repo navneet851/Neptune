@@ -19,7 +19,11 @@ class SearchViewModel @Inject constructor(private val repository: AppRepository,
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
     val songs : StateFlow<Response<List<SongsModel>>> = _songs
 
+    val likeState = currentSongState.likeState
 
+    fun updateLikeState(likeState : Boolean){
+        currentSongState.updateLikeState(likeState)
+    }
 
     init {
         fetchSongs()

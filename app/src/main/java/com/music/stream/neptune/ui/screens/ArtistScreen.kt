@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +56,9 @@ import com.music.stream.neptune.R
 import com.music.stream.neptune.data.api.Response
 import com.music.stream.neptune.data.entity.ArtistsModel
 import com.music.stream.neptune.data.entity.SongsModel
+import com.music.stream.neptune.data.preferences.addLikedSongId
+import com.music.stream.neptune.data.preferences.isSongLiked
+import com.music.stream.neptune.data.preferences.removeLikedSongId
 import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.components.Loader
@@ -137,7 +140,10 @@ fun SumUpArtistScreen(
                 modifier = Modifier.padding(16.dp, 0.dp),
                 navigationIcon = {
                     Icon(
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
                             navController.navigateUp()
                         },
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -260,6 +266,15 @@ fun SumUpArtistScreen(
 
 
             repeat(artistSongs.size) { song ->
+                var isLiked by remember {
+                    mutableStateOf(isSongLiked(context, artistSongs[song].id.toString()))
+                }
+                val likeState = artistViewModel.likeState.value
+                LaunchedEffect(likeState){
+                    isLiked = isSongLiked(context, artistSongs[song].id.toString())
+                }
+                val songId = artistSongs[song].id
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -315,7 +330,34 @@ fun SumUpArtistScreen(
                     }
 
                     Icon(
-                        imageVector = Icons.Default.MoreVert, tint = Color.Gray, contentDescription = ""
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                if (isLiked) {
+                                    removeLikedSongId(context, songId.toString())
+                                } else {
+                                    addLikedSongId(context, songId.toString())
+                                }
+                                isLiked = isSongLiked(context, songId.toString())
+                                artistViewModel.updateLikeState(!artistViewModel.likeState.value)
+
+                            },
+                        painter = if (isLiked){
+                            painterResource(id = R.drawable.added)
+                        }
+                        else{
+                            painterResource(id = R.drawable.ic_add)
+                        }
+                        ,
+                        tint = if (isLiked){
+                            Color.White
+                        }else{
+                            Color.Gray
+                        },
+                        contentDescription = ""
                     )
                 }
             }

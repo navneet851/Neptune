@@ -53,7 +53,6 @@ import com.music.stream.neptune.di.Palette
 import com.music.stream.neptune.di.SongPlayer
 import com.music.stream.neptune.ui.navigation.Routes
 import com.music.stream.neptune.ui.theme.AppBackground
-import com.music.stream.neptune.ui.theme.AppPalette
 import com.music.stream.neptune.ui.theme.GridBackground
 import com.music.stream.neptune.ui.viewmodel.PlayerViewModel
 import kotlinx.coroutines.delay
@@ -85,8 +84,6 @@ fun MiniPlayer(navController: NavController) {
     val songId = miniPlayerViewModel.currentSongId.value
     val songIndex = miniPlayerViewModel.currentSongIndex.value
     val songAlbum = miniPlayerViewModel.currentSongAlbum.value
-
-    val likeState = miniPlayerViewModel.likeState.value
 
 
     var songProgress by remember { mutableFloatStateOf(0f) }
@@ -122,9 +119,11 @@ fun MiniPlayer(navController: NavController) {
     var isLiked by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(songId) {
+    val likeState = miniPlayerViewModel.likeState.value
+    LaunchedEffect(likeState, songId) {
         isLiked = isSongLiked(context, songId.toString())
     }
+
 
     Column(
         modifier = Modifier
@@ -200,14 +199,8 @@ fun MiniPlayer(navController: NavController) {
                     }
                     else{
                         painterResource(id = R.drawable.ic_add)
-                    }
-                    ,
-                    tint = if (isLiked){
-                        Color(AppPalette.toArgb())
-                    }
-                    else{
-                        Color.White
                     },
+                    tint = Color.White,
                     contentDescription = ""
                 )
 
