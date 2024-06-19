@@ -4,7 +4,7 @@
     <style name="Theme.Neptune" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="splashScreenTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/black</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_round</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
         <item name="postSplashScreenTheme">@style/Theme.Neptune</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
