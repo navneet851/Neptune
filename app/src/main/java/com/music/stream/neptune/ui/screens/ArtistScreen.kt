@@ -243,7 +243,7 @@ fun SumUpArtistScreen(
                                     artistViewModel.updateSongState(
                                         artistSongs[0].coverUri,
                                         artistSongs[0].title,
-                                        artistSongs[0].singer,
+                                        artistName,
                                         true,
                                         artistSongs[0].id,
                                         0
@@ -293,7 +293,7 @@ fun SumUpArtistScreen(
                             artistViewModel.updateSongState(
                                 artistSongs[song].coverUri,
                                 artistSongs[song].title,
-                                artistSongs[song].singer,
+                                artistName,
                                 true,
                                 artistSongs[song].id,
                                 song

@@ -122,7 +122,10 @@ fun PlayerScreen(navController: NavController) {
         emptyList<SongsModel>()
     }
 
-    var queueSongs : List<SongsModel> = emptyList()
+    var queueSongs by remember { mutableStateOf(listOf<SongsModel>()) }
+    val playingArtist by remember {
+        mutableStateOf(playerViewModel.playingArtist)
+    }
 
     if (playerViewModel.currentSongAlbum.value == "Liked Songs"){
         val likesSongIds = getLikedSongIds(context)
@@ -130,16 +133,19 @@ fun PlayerScreen(navController: NavController) {
             it.title
         }
     }
-    else{
+    else if (playerViewModel.currentSongAlbum.value != "") {
         queueSongs = songs.filter {
-            if (playerViewModel.currentSongAlbum.value != ""){
-                playerViewModel.currentSongAlbum.value == it.album
-            }
-            else{
-                playerViewModel.currentSongSinger.value == it.singer
-            }
+            //playerViewModel.currentSongAlbum.value == it.album
+            it.album.lowercase().contains(playerViewModel.currentSongAlbum.value.lowercase())
         }
     }
+    else{
+        queueSongs = songs.filter {
+            //playerViewModel.currentSongSinger.value == it.singer
+            it.singer.lowercase().contains(playingArtist.lowercase())
+        }.sortedBy { it.title }
+    }
+
 
 
 
@@ -223,6 +229,18 @@ fun PlayerScreen(navController: NavController) {
                     value = SongPlayer.getCurrentPosition().toFloat() / SongPlayer.getDuration().toFloat(),
                     onValueChange = { newValue ->
                         SongPlayer.seekTo((newValue * SongPlayer.getDuration()).toLong())
+                        if(!songPlayingState){
+                            SongPlayer.play()
+                            playerViewModel.updateSongState(
+                                playerViewModel.currentSongCoverUri.value,
+                                playerViewModel.currentSongTitle.value,
+                                playerViewModel.currentSongSinger.value,
+                                true,
+                                playerViewModel.currentSongId.value,
+                                playerViewModel.currentSongIndex.value,
+                                playerViewModel.currentSongAlbum.value
+                            )
+                        }
                     },
                     valueRange = 0f..1f,
                     steps = 0,
@@ -515,7 +533,8 @@ fun PlayerFull(
 
                         playerViewModel.playPreviousSong(queueSongs, context)
                     }
-                    isLiked.value = isSongLiked(context, playerViewModel.currentSongId.value.toString())
+                    isLiked.value =
+                        isSongLiked(context, playerViewModel.currentSongId.value.toString())
                 }
             ,
             tint = Color.White,
@@ -581,7 +600,8 @@ fun PlayerFull(
                     } else {
                         playerViewModel.playNextSongs(queueSongs, context)
                     }
-                    isLiked.value = isSongLiked(context, playerViewModel.currentSongId.value.toString())
+                    isLiked.value =
+                        isSongLiked(context, playerViewModel.currentSongId.value.toString())
                 }
             ,
             tint = Color.White,

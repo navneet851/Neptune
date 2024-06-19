@@ -2,6 +2,8 @@ package com.music.stream.neptune.ui.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.music.stream.neptune.data.api.Response
@@ -38,7 +40,7 @@ class PlayerViewModel @Inject constructor(private val currentSongState: CurrentS
     private val _songs : MutableStateFlow<Response<List<SongsModel>>> = MutableStateFlow(Response.Loading())
     val songs : StateFlow<Response<List<SongsModel>>> = _songs
 
-
+    val playingArtist by mutableStateOf(currentSongSinger.value)
 
     init {
         fetchSongs()
