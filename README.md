@@ -1,6 +1,7 @@
 <p align="center">
-  <img src="app/src/main/res/drawable/logo.png" alt="Logo" width="80" height="80">
+  <img style="border-radius : 10px;" src="app/src/main/res/drawable/logo.png" alt="Logo" width="80" height="80">
   <h3 align="center">Music Stream Neptune</h3>
+<p align="center">A Spotify clone implemented with all Spotify features</p>
 </p>
 
 <p align="center">
@@ -30,8 +31,7 @@
 ## Setup and Installation
 
 1. Clone the repository: `git clone https://github.com/Navneet852/MusicStreamNeptune.git`
-2. Open the project in Android Studio Jellyfish | 2023.3.1 Patch 2
-3. Build and run the project on an emulator or actual device
+2. Build and run the project on an emulator or actual device
 
 ## Contributing
 
