@@ -1,7 +1,7 @@
 <p align="center">
   <img style="border-radius : 10px;" src="app/src/main/res/drawable/logo.png" alt="Logo" width="80" height="80">
   <h3 align="center">Music Stream Neptune</h3>
-<p align="center">A Spotify clone implemented with all Spotify features</p>
+<p align="center">A Spotify clone implemented with Spotify features</p>
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@
   <img src="https://img.icons8.com/color/48/000000/kotlin.png" alt="Kotlin" width="40" height="40"/>
   <img src="https://img.icons8.com/color/48/000000/android-os.png" alt="Android" width="40" height="40"/>
   <img src="https://img.icons8.com/color/48/000000/firebase.png" alt="Firebase" width="40" height="40"/>
-  <img src="https://img.icons8.com/color/48/000000/gradle.png" alt="Gradle" width="40" height="40"/>
+  <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjC97Z8BResg5dlPqczsRCFhP6zewWX0X0e7fVPG-G7PuUZwwZVsi9OPoqJYkgqT2h0FI95SsmWzVEgpt8b8HAqFiIxZ98TFtY4lE0b8UrtVJ2HrJebRwl6C9DslsQDl9KnBIrdHS6LtkY/s1600/jetpack+compose+icon_RGB.png" alt="Jetpack compose" width="40" height="40"/>
   <img src="https://img.icons8.com/color/48/000000/java-coffee-cup-logo--v1.png" alt="Java" width="40" height="40"/>
 </p>
 
