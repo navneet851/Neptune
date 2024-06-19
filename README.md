@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Music Stream Neptune is a music streaming application developed in Kotlin. The application allows users to play, pause, shuffle, and repeat songs. It also provides a feature to like songs and maintain a list of liked songs.
+  Music Stream Neptune is a music streaming application developed in Kotlin. The application allows users to play, pause, shuffle, and repeat songs. It also provides a feature to like songs and maintain a list of liked songs. In Music Stream Neptune, Firebase plays a pivotal role by providing several backend services. Firebase Firestore serves as the primary database for the application, storing user data such as playlists, songs. Firebase Storage is utilized to store and serve the album art images for the songs. Lastly. By integrating these Firebase services, Music Stream Neptune is able to offer a robust and feature-rich music streaming experience to its users.
 </p>
 
 ## Screenshots
@@ -27,6 +27,14 @@
 - Dependency Injection: Hilt
 - Asynchronous Programming: Coroutines
 - Android Architecture Components: ViewModel, LiveData
+
+<p align="left">
+  <img src="https://img.icons8.com/color/48/000000/kotlin.png" alt="Kotlin" width="40" height="40"/>
+  <img src="https://img.icons8.com/color/48/000000/android-os.png" alt="Android" width="40" height="40"/>
+  <img src="https://img.icons8.com/color/48/000000/firebase.png" alt="Firebase" width="40" height="40"/>
+  <img src="https://img.icons8.com/color/48/000000/gradle.png" alt="Gradle" width="40" height="40"/>
+  <img src="https://img.icons8.com/color/48/000000/java-coffee-cup-logo--v1.png" alt="Java" width="40" height="40"/>
+</p>
 
 ## Setup and Installation
 
