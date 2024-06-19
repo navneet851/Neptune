@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="path_to_logo.png" alt="Logo" width="80" height="80">
+  <img src="app/src/main/res/drawable/logo.png" alt="Logo" width="80" height="80">
   <h3 align="center">Music Stream Neptune</h3>
 </p>
 
@@ -10,9 +10,12 @@
 ## Screenshots
 
 <p align="center">
-  <img src="path_to_screenshot_1.png" alt="Screenshot 1" width="200">
-  <img src="path_to_screenshot_2.png" alt="Screenshot 2" width="200">
-  <img src="path_to_screenshot_3.png" alt="Screenshot 3" width="200">
+  <img src="assets/Screenshot_20240619_182216.png" alt="Screenshot 1" width="200">
+  <img src="assets/Screenshot_20240619_182351.png" alt="Screenshot 2" width="200">
+  <img src="assets/Screenshot_20240619_182430.png" alt="Screenshot 3" width="200">
+  <img src="assets/Screenshot_20240619_182511.png" alt="Screenshot 3" width="200">
+  <img src="assets/Screenshot_20240619_182533.png" alt="Screenshot 3" width="200">
+  <img src="assets/Screenshot_20240619_182620.png" alt="Screenshot 3" width="200">
 </p>
 
 ## Tools and Libraries Used
