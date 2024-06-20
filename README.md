@@ -38,7 +38,7 @@
 
 ## Setup and Installation
 
-1. Clone the repository: `git clone https://github.com/Navneet852/MusicStreamNeptune.git`
+1. Clone the repository: `git clone https://github.com/Navneet851/spotify-clone-jetpack-compose.git`
 2. Build and run the project on an emulator or actual device
 
 ## Contributing
