@@ -20,7 +20,7 @@
 </p>
 
 
-<a href="https://drive.google.com/file/d/1fFaSRDJ0lcOTYglQCBpepjVlQXGehy5E/view?usp=sharing" style="display:inline-block;text-decoration:none;background-color:#4CAF50;color:white;padding:10px 20px;border-radius:5px;border:1px solid transparent;transition:background-color 0.3s;">Download My App</a>
+<a href="https://drive.google.com/file/d/1fFaSRDJ0lcOTYglQCBpepjVlQXGehy5E/view?usp=sharing" ><img src="https://img.icons8.com/color/48/000000/download" alt="download" width="40" height="40"/> Download My App</a>
 
 ## Tools and Libraries Used
 
