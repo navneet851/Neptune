@@ -27,6 +27,7 @@
 - Dependency Injection: Hilt
 - Asynchronous Programming: Coroutines
 - Android Architecture Components: ViewModel, LiveData
+- Backend: Firebase
 
 <p align="left">
   <img src="https://img.icons8.com/color/48/000000/kotlin.png" alt="Kotlin" width="40" height="40"/>
