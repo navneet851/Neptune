@@ -19,6 +19,9 @@
   <img src="assets/Screenshot_20240619_182620.png" alt="Screenshot 3" width="200">
 </p>
 
+
+<a href="https://drive.google.com/file/d/1fFaSRDJ0lcOTYglQCBpepjVlQXGehy5E/view?usp=sharing" ><img src="https://img.icons8.com/color/48/000000/download" alt="download" width="40" height="40"/> Download My App</a>
+
 ## Tools and Libraries Used
 
 - Language: Kotlin
@@ -27,6 +30,7 @@
 - Dependency Injection: Hilt
 - Asynchronous Programming: Coroutines
 - Android Architecture Components: ViewModel, LiveData
+- Backend: Firebase
 
 <p align="left">
   <img src="https://img.icons8.com/color/48/000000/kotlin.png" alt="Kotlin" width="40" height="40"/>
@@ -38,7 +42,7 @@
 
 ## Setup and Installation
 
-1. Clone the repository: `git clone https://github.com/Navneet852/MusicStreamNeptune.git`
+1. Clone the repository: `git clone https://github.com/Navneet851/spotify-clone-jetpack-compose.git`
 2. Build and run the project on an emulator or actual device
 
 ## Contributing
