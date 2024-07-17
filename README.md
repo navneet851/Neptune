@@ -28,8 +28,8 @@
 - Framework: Android Jetpack Compose
 - Image Loading: Glide
 - Dependency Injection: Hilt
-- Asynchronous Programming: Coroutines
-- Android Architecture Components: ViewModel, LiveData
+- Asynchronous Programming: Coroutines, Flow
+- Android Architecture Components: MVVM, ViewModel
 - Backend: Firebase
 
 <p align="left">
